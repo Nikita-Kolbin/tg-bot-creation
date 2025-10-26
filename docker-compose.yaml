@@ -1,0 +1,86 @@
+services:
+
+  backend:
+    build: ./backend
+    env_file: ./backend/env/.env
+    ports:
+      - 8082:8082
+    networks:
+      - tg_bot_creator_nw
+    depends_on:
+      postgresql:
+        condition: service_healthy
+#      redis:
+#        condition: service_healthy
+
+#  frontend:
+#    build: ./frontend
+#    ports:
+#      - 5173:5173
+#    networks:
+#      - tg_bot_creator_nw
+#    command: ["npm", "run", "dev"]
+#    depends_on:
+#     - backend
+
+  postgresql:
+    image: postgres:16
+    ports:
+      - 5050:5432
+    env_file: ./backend/env/.env
+    volumes:
+      - postgresql:/var/lib/postgresql/data
+    networks:
+      - tg_bot_creator_nw
+    healthcheck:
+      test: pg_isready -U postgres -d test_db
+      interval: 20s
+      timeout: 20s
+      retries: 5
+
+  migrate:
+    image: migrate/migrate
+    env_file: ./backend/env/.env
+    volumes:
+      - ./backend/migrations:/database
+    networks:
+      - tg_bot_creator_nw
+    command: [ "-path", "/database", "-database",  "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_DB_NAME}?sslmode=disable", "up" ]
+    depends_on:
+      postgresql:
+        condition: service_healthy
+
+#  minio:
+#    image: minio/minio
+#    env_file: ./backend/.env
+#    ports:
+#      - 9000:9000
+#      - 9001:9001
+#    volumes:
+#      - minio_storage:/data
+#    command: server --console-address ":9001" /data
+#    networks:
+#      - tg_bot_creator_nw
+#
+#  redis:
+#    image: redis:latest
+#    ports:
+#      - 6379:6379
+#    command: redis-server --requirepass ${REDIS_PASSWORD}
+#    volumes:
+#      - redis:/data
+#    networks:
+#      - tg_bot_creator_nw
+#    healthcheck:
+#      test: [ "CMD", "redis-cli", "-a", "$REDIS_PASSWORD", "ping" ]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 5
+
+volumes:
+  postgresql: {}
+#  minio_storage: {}
+#  redis: {}
+
+networks:
+  tg_bot_creator_nw: {}

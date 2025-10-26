@@ -11,8 +11,8 @@ import (
 const ENVInDocker = "IN_DOCKER"
 
 type Config struct {
-	Env           string `env:"ENV" envDefault:"dev"`
-	TelegramToken string `env:"TELEGRAM_TOKEN,required"`
+	Env       string `env:"ENV" envDefault:"dev"`
+	JWTSecret string `env:"JWT_SECRET,required"`
 
 	Listener ListenerConfig `envPrefix:"LISTENER_"`
 	Postgres PostgresConfig `envPrefix:"POSTGRES_"`
@@ -30,7 +30,7 @@ type PostgresConfig struct {
 	HostPort          string        `env:"HOST_PORT,required"`
 	Username          string        `env:"USER,required"`
 	Password          string        `env:"PASSWORD,required"`
-	DBName            string        `env:"DB_NAME" envDefault:"maestro"`
+	DBName            string        `env:"DB_NAME" envDefault:"tg_bot_creation"`
 	DBMaxConn         int           `env:"DB_MAX_CONN" envDefault:"10"`
 	DBMaxConnLifeTime time.Duration `env:"DB_MAX_CONN_LIFE_TIME" envDefault:"5m"`
 	DBMaxConnIdleTime time.Duration `env:"DB_MAX_CONN_IDLE_TIME" envDefault:"1m"`
