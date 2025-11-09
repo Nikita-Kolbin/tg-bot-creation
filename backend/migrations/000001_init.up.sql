@@ -25,6 +25,7 @@ CREATE TABLE bots (
     token VARCHAR(255) UNIQUE NOT NULL DEFAULT '',
     status VARCHAR(50) NOT NULL DEFAULT 'inactive', -- 'active', 'inactive', 'maintenance'
     owner_user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+    tg_offset BIGINT NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );

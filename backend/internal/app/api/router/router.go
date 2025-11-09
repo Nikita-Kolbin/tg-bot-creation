@@ -3,6 +3,7 @@ package router
 import (
 	"context"
 	"fmt"
+	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/api/bot"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/api/user"
 	"net/http"
 
@@ -16,8 +17,10 @@ import (
 )
 
 type service interface {
-	GetJWTSecret() string
 	user.Service
+	bot.Service
+
+	GetJWTSecret() string
 }
 
 func New(_ context.Context, srv service, address string) http.Handler {
@@ -28,7 +31,6 @@ func New(_ context.Context, srv service, address string) http.Handler {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 	authMiddleware := authMW.Auth(srv.GetJWTSecret())
-	_ = authMiddleware // TODO: delete
 
 	// CORS
 	router.Use(cors.Handler(cors.Options{
@@ -44,10 +46,13 @@ func New(_ context.Context, srv service, address string) http.Handler {
 
 	// APIs
 	userAPI := user.NewAPI(srv)
+	botAPI := bot.NewAPI(srv)
 
 	// handlers
 	router.Post("/api/user/sign-up", userAPI.SignUp)
 	router.Post("/api/user/sign-in", userAPI.SignIn)
+
+	router.Post("/api/bot/create", authMiddleware(botAPI.CreateBot))
 
 	return router
 }
