@@ -62,7 +62,7 @@ func parseToken(t, jwtSecret string) (userToken *UserJWT, err error) {
 	return userToken, nil
 }
 
-func GetUserId(ctx context.Context) int64 {
+func GetUserId(ctx context.Context) int {
 	token, ok := ctx.Value(contextTokenKey).(*UserJWT)
 	if !ok {
 		return 0

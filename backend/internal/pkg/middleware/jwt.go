@@ -15,7 +15,7 @@ const (
 )
 
 type UserJWT struct {
-	UserID int64 `json:"uid"`
+	UserID int `json:"uid"`
 	jwt.StandardClaims
 }
 

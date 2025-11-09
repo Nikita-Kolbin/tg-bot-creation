@@ -3,13 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
-
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/api/router"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/config"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/repository"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/service"
+	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/telegram"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/pkg/httpserver"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/pkg/logger"
+	"time"
 )
 
 // @title           TG Bot Creator
@@ -41,7 +42,7 @@ func run(ctx context.Context) error {
 	}
 	defer repo.Close(ctx)
 
-	// TODO: init tg client
+	tgCli := telegram.New()
 
 	// TODO: init storage
 	//stg, err := minioclient.New(ctx, cfg.Minio.HostPort, cfg.Minio.Username, cfg.Minio.Password, cfg.Minio.UseSSL)
@@ -56,7 +57,28 @@ func run(ctx context.Context) error {
 	//}
 	//defer cache.Close()
 
-	srv := service.New(repo, nil, cfg.JWTSecret)
+	srv := service.New(repo, tgCli, cfg.JWTSecret)
+
+	// Джобы
+
+	go func(ctx context.Context) {
+		for {
+			err := srv.UpdateActiveBotsJob(ctx)
+			if err != nil {
+				logger.Error(ctx, "update active bots failed", "err", err)
+			}
+			time.Sleep(time.Minute)
+		}
+	}(ctx)
+
+	go func(ctx context.Context) {
+		for {
+			srv.ProcessTelegramUpdatesJob(ctx)
+			time.Sleep(100 * time.Millisecond)
+		}
+	}(ctx)
+
+	// Сервер
 
 	r := router.New(ctx, srv, cfg.Listener.GetHostPort())
 
