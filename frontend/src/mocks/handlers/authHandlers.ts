@@ -1,0 +1,51 @@
+import { http, HttpResponse } from 'msw'
+
+interface AuthRequestBody {
+	email: string
+	password: string
+}
+
+let mockUsers: AuthRequestBody[] = []
+
+export const authHandlers = [
+	// Регистрация
+	http.post('/api/admin/sign-up', async ({ request }) => {
+		const body = (await request.json()) as AuthRequestBody
+		const { email, password } = body
+
+		const exists = mockUsers.find(u => u.email === email)
+		if (exists) {
+			return HttpResponse.json(
+				{ message: 'Пользователь уже существует' },
+				{ status: 400 }
+			)
+		}
+
+		mockUsers.push({ email, password })
+		return HttpResponse.json({
+			message: 'Регистрация успешна',
+			accessToken: 'mock-token',
+		})
+	}),
+
+	// Авторизация
+	http.post('/api/admin/sign-in', async ({ request }) => {
+		const body = (await request.json()) as AuthRequestBody
+		const { email, password } = body
+
+		const user = mockUsers.find(
+			u => u.email === email && u.password === password
+		)
+		if (!user) {
+			return HttpResponse.json(
+				{ message: 'Неверный логин или пароль' },
+				{ status: 401 }
+			)
+		}
+
+		return HttpResponse.json({
+			message: 'Авторизация успешна',
+			accessToken: 'mock-token',
+		})
+	}),
+]
