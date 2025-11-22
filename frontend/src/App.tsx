@@ -1,35 +1,66 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react'
+import { Routes, Route, Link } from 'react-router-dom'
+import { PrivateRoute } from './routes/PrivateRoute'
+import { useAppDispatch, useAppSelector } from './app/hooks'
+import { logout } from './features/auth/authSlice'
 
-function App() {
-  const [count, setCount] = useState(0)
+const Dashboard: React.FC = () => {
+	const user = useAppSelector(s => s.auth.user)
+	return (
+		<div style={{ padding: 24 }}>
+			<h1>Dashboard</h1>
+			<p>Welcome, {user?.name || 'user'}!</p>
+			<p>
+				<Link to='/scenarios'>Scenarios</Link>
+			</p>
+		</div>
+	)
+}
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+const App: React.FC = () => {
+	const dispatch = useAppDispatch()
+	const token = useAppSelector(s => s.auth.accessToken)
+
+	return (
+		<div>
+			<header
+				style={{
+					display: 'flex',
+					justifyContent: 'space-between',
+					padding: 12,
+				}}
+			>
+				<div>
+					<Link to='/'>TG Platform</Link>
+				</div>
+				<div>
+					{token ? (
+						<>
+							<button onClick={() => dispatch(logout())}>Logout</button>
+						</>
+					) : (
+						<>
+							<Link to='/signin'>Sign in</Link> |{' '}
+							<Link to='/signup'>Sign up</Link>
+						</>
+					)}
+				</div>
+			</header>
+
+			<main style={{ padding: 12 }}>
+				<Routes>
+					<Route
+						path='/'
+						element={
+							<PrivateRoute>
+								<Dashboard />
+							</PrivateRoute>
+						}
+					/>
+				</Routes>
+			</main>
+		</div>
+	)
 }
 
 export default App
