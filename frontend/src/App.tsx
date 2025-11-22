@@ -19,7 +19,7 @@ const Dashboard: React.FC = () => {
 
 const App: React.FC = () => {
 	const dispatch = useAppDispatch()
-	const token = useAppSelector(s => s.auth.accessToken)
+	const token = useAppSelector(s => s.auth.token)
 
 	return (
 		<div>

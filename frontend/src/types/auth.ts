@@ -6,7 +6,7 @@ export type User = {
 
 export type AuthResponse = {
 	user: User
-	accessToken: string
+	token: string
 }
 
 export type SignInDto = {

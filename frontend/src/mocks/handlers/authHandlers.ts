@@ -24,7 +24,7 @@ export const authHandlers = [
 		mockUsers.push({ email, password })
 		return HttpResponse.json({
 			message: 'Регистрация успешна',
-			accessToken: 'mock-token',
+			token: 'mock-token',
 		})
 	}),
 
@@ -45,7 +45,7 @@ export const authHandlers = [
 
 		return HttpResponse.json({
 			message: 'Авторизация успешна',
-			accessToken: 'mock-token',
+			token: 'mock-token',
 		})
 	}),
 ]

@@ -1,16 +1,16 @@
-import { createSlice, type PayloadAction,  } from '@reduxjs/toolkit'
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import type { User } from '../../types/auth'
 import { loadToken, saveToken, clearToken } from '../../utils/persistToken'
 
 interface AuthState {
 	user: User | null
-	accessToken: string | null
+	token: string | null
 	status: 'idle' | 'loading' | 'failed'
 }
 
 const initialState: AuthState = {
 	user: null,
-	accessToken: loadToken(),
+	token: loadToken(),
 	status: 'idle',
 }
 
@@ -20,15 +20,15 @@ const authSlice = createSlice({
 	reducers: {
 		setCredentials: (
 			state,
-			action: PayloadAction<{ user: User; accessToken: string }>
+			action: PayloadAction<{ user: User; token: string }>
 		) => {
 			state.user = action.payload.user
-			state.accessToken = action.payload.accessToken
-			saveToken(action.payload.accessToken)
+			state.token = action.payload.token
+			saveToken(action.payload.token)
 		},
 		logout: state => {
 			state.user = null
-			state.accessToken = null
+			state.token = null
 			clearToken()
 		},
 		setUser: (state, action: PayloadAction<User>) => {

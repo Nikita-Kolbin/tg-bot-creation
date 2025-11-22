@@ -15,7 +15,7 @@ const SignIn: React.FC = () => {
 		setError(null)
 		try {
 			const res = await signIn(data).unwrap()
-			dispatch(setCredentials({ user: res.user, accessToken: res.accessToken }))
+			dispatch(setCredentials({ user: res.user, token: res.token }))
 			navigate('/') // redirect to dashboard
 		} catch (err: any) {
 			setError(err?.data?.message || err?.message || 'Sign-in failed')

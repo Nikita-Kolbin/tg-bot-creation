@@ -11,14 +11,11 @@ const SignUp: React.FC = () => {
 	const navigate = useNavigate()
 	const [error, setError] = React.useState<string | null>(null)
 
-	const handleSubmit = async (data: {
-		email: string
-		password: string
-	}) => {
+	const handleSubmit = async (data: { email: string; password: string }) => {
 		setError(null)
 		try {
 			const res = await signUp(data as any).unwrap()
-			dispatch(setCredentials({ user: res.user, accessToken: res.accessToken }))
+			dispatch(setCredentials({ user: res.user, token: res.token }))
 			navigate('/') // redirect to dashboard
 		} catch (err: any) {
 			setError(err?.data?.message || err?.message || 'Sign-up failed')

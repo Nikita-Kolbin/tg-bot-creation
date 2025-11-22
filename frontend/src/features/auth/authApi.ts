@@ -5,14 +5,14 @@ export const authApi = apiSlice.injectEndpoints({
 	endpoints: build => ({
 		signIn: build.mutation<AuthResponse, SignInDto>({
 			query: body => ({
-				url: 'api/admin/sign-in',
+				url: 'api/user/sign-in',
 				method: 'POST',
 				body,
 			}),
 		}),
 		signUp: build.mutation<AuthResponse, SignUpDto>({
 			query: body => ({
-				url: 'api/admin/sign-up',
+				url: 'api/user/sign-up',
 				method: 'POST',
 				body,
 			}),
