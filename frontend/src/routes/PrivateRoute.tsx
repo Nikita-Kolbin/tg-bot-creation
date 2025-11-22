@@ -5,7 +5,7 @@ import { useAppSelector } from '../app/hooks'
 type Props = { children: JSX.Element }
 
 export const PrivateRoute = ({ children }: Props) => {
-	const token = useAppSelector(s => s.auth.accessToken)
+	const token = useAppSelector(s => s.auth.token)
 	if (!token) {
 		return <Navigate to='/signin' replace />
 	}
