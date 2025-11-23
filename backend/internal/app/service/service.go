@@ -19,6 +19,10 @@ type repository interface {
 
 	UpdateScenario(ctx context.Context, botID int, steps []*model.Step, buttons []*model.Button) error
 	GetScenarioByBotID(ctx context.Context, botID int) ([]*model.Step, map[string]*model.Button, error)
+	GetStepWithButtonsMap(ctx context.Context, botID int, number int) (*model.Step, map[string]*model.Button, error)
+
+	UpsertTgUserStep(ctx context.Context, step *model.TgUserStep) error
+	GetCurrentStepNumber(ctx context.Context, username string, botID int) (int, error)
 }
 
 type tgClient interface {

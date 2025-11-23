@@ -218,3 +218,82 @@ func (r *Repository) IsBotOwner(ctx context.Context, botID int, userID int) (boo
 	}
 	return ownerID == userID, nil
 }
+
+func (r *Repository) UpsertTgUserStep(ctx context.Context, step *model.TgUserStep) error {
+	query := `
+        INSERT INTO tg_user_steps (username, number, bot_id)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (username, bot_id) 
+        DO UPDATE SET number = EXCLUDED.number, updated_at = NOW()
+    `
+
+	_, err := r.conn.ExecContext(ctx, query, step.Username, step.Number, step.BotID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *Repository) GetCurrentStepNumber(ctx context.Context, username string, botID int) (int, error) {
+	query := `
+        SELECT number
+        FROM tg_user_steps
+        WHERE username = $1 AND bot_id = $2
+        LIMIT 1
+    `
+
+	var number int
+	err := r.conn.GetContext(ctx, &number, query, username, botID)
+	if err != nil {
+		return 0, err
+	}
+
+	return number, nil
+}
+
+func (r *Repository) GetStepWithButtonsMap(ctx context.Context, botID int, number int) (*model.Step, map[string]*model.Button, error) {
+	stepQuery := `
+        SELECT id, number, bot_id, text, coord_x, coord_y, button_uuids, created_at, updated_at
+        FROM steps
+        WHERE bot_id = $1 AND number = $2
+        LIMIT 1
+    `
+	var step model.Step
+	err := r.conn.QueryRowContext(ctx, stepQuery, botID, number).Scan(
+		&step.ID,
+		&step.Number,
+		&step.BotID,
+		&step.Text,
+		&step.CoordX,
+		&step.CoordY,
+		pq.Array(&step.ButtonUUIDs),
+		&step.CreatedAt,
+		&step.UpdatedAt,
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	buttonsMap := make(map[string]*model.Button)
+	if len(step.ButtonUUIDs) == 0 {
+		return &step, buttonsMap, nil
+	}
+
+	buttonsQuery := `
+        SELECT uuid, text, next_step, bot_id, created_at, updated_at
+        FROM buttons
+        WHERE bot_id = $1 AND uuid = ANY($2)
+    `
+	buttons := []*model.Button{}
+	err = r.conn.SelectContext(ctx, &buttons, buttonsQuery, botID, pq.Array(step.ButtonUUIDs))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	for _, btn := range buttons {
+		buttonsMap[btn.UUID] = btn
+	}
+
+	return &step, buttonsMap, nil
+}

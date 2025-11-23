@@ -68,4 +68,5 @@ CREATE TABLE tg_user_steps (
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
+CREATE UNIQUE INDEX unique_tg_user_steps_username_bot_id ON tg_user_steps (username, bot_id);
 
