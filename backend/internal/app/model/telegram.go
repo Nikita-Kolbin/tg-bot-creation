@@ -32,3 +32,13 @@ type Response struct {
 type Result struct {
 	MessageID int `json:"message_id"`
 }
+
+type ReplyKeyboardMarkup struct {
+	Keyboard        [][]KeyboardButton `json:"keyboard"`
+	ResizeKeyboard  bool               `json:"resize_keyboard,omitempty"` // Изменение размера под устройство
+	OneTimeKeyboard bool               `json:"one_time_keyboard,omitempty"`
+}
+
+type KeyboardButton struct {
+	Text string `json:"text"`
+}

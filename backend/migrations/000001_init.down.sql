@@ -1,3 +1,9 @@
+DROP TABLE IF EXISTS tg_user_steps;
+
+DROP TABLE IF EXISTS buttons;
+
+DROP TABLE IF EXISTS steps;
+
 DROP TABLE IF EXISTS bots;
 
 DROP TABLE IF EXISTS users;

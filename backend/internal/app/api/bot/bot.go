@@ -3,11 +3,16 @@ package bot
 import (
 	"context"
 
+	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/api/dto"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/model"
 )
 
 type Service interface {
 	CreateBot(ctx context.Context, bot *model.Bot) (*model.Bot, error)
+	IsBotOwner(ctx context.Context, botID int, userID int) (bool, error)
+
+	UpdateBotScenario(ctx context.Context, scenario *dto.SetBotScenarioRequest) error
+	GetBotScenario(ctx context.Context, botID int) (*dto.GetBotScenarioResponse, error)
 }
 
 type Bot struct {

@@ -6,8 +6,6 @@ definitions:
         type: string
       name:
         type: string
-      status:
-        type: string
       token:
         type: string
     type: object
@@ -28,9 +26,40 @@ definitions:
       updated_at:
         type: string
     type: object
+  dto.Button:
+    properties:
+      next_step:
+        type: integer
+      text:
+        type: string
+    type: object
   dto.ErrorResponse:
     properties:
       error:
+        type: string
+    type: object
+  dto.SetBotScenarioRequest:
+    properties:
+      bot_id:
+        type: integer
+      steps:
+        items:
+          $ref: '#/definitions/dto.Step'
+        type: array
+    type: object
+  dto.Step:
+    properties:
+      buttons:
+        items:
+          $ref: '#/definitions/dto.Button'
+        type: array
+      coord_x:
+        type: integer
+      coord_y:
+        type: integer
+      number:
+        type: integer
+      text:
         type: string
     type: object
   dto.UserTokenResponse:
@@ -80,6 +109,80 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Create new Telegram bot
+      tags:
+      - bot
+  /bot/scenario:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bot ID
+        in: query
+        name: bot_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SetBotScenarioRequest'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get bot scenario steps and buttons
+      tags:
+      - bot
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: bot scenario update request
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SetBotScenarioRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update bot scenario steps
       tags:
       - bot
   /user/sign-in:

@@ -1,6 +1,3 @@
-
-
-
 -- Пользователи системы
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
@@ -24,8 +21,52 @@ CREATE TABLE bots (
     description TEXT NOT NULL DEFAULT '',
     token VARCHAR(255) UNIQUE NOT NULL DEFAULT '',
     status VARCHAR(50) NOT NULL DEFAULT 'inactive', -- 'active', 'inactive', 'maintenance'
-    owner_user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+    owner_user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     tg_offset BIGINT NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
+
+
+
+-- Шаги сценария тг бота
+CREATE TABLE steps (
+    id BIGSERIAL PRIMARY KEY,
+    number INT NOT NULL,
+    bot_id BIGINT NOT NULL REFERENCES bots(id) ON DELETE CASCADE,
+    text TEXT NOT NULL DEFAULT '',
+    coord_x SMALLINT NOT NULL DEFAULT 0,
+    coord_y SMALLINT NOT NULL DEFAULT 0,
+    button_uuids TEXT[] NOT NULL DEFAULT '{}',
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+CREATE UNIQUE INDEX unique_bot_step_number ON steps (bot_id, number);
+
+
+
+-- Кнопки в шаге бота
+CREATE TABLE buttons (
+    uuid TEXT PRIMARY KEY,
+    text TEXT NOT NULL DEFAULT '',
+    next_step INT NOT NULL,
+    bot_id BIGINT NOT NULL REFERENCES bots(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+
+
+--- На каком шаге сейчас юзер
+CREATE TABLE tg_user_steps (
+    id BIGSERIAL PRIMARY KEY,
+    username TEXT NOT NULL,
+    number INT NOT NULL,
+    bot_id BIGINT NOT NULL REFERENCES bots(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+CREATE UNIQUE INDEX unique_tg_user_steps_username_bot_id ON tg_user_steps (username, bot_id);
+

@@ -13,11 +13,11 @@ compose_rebuild:
 
 # Накатить миграции
 compose_migrate:
-	docker compose --env-file ./backend/env/.env -p tg_bot_creator up -d migrate --build --force-recreate
+	docker compose --env-file ./backend/env/.env -p tg-bot-creation up -d migrate --build --force-recreate
 
 # Перебилдить бэк
 compose_backend:
-	docker compose --env-file ./backend/env/.env -p tg_bot_creator up -d backend --build --force-recreate
+	docker compose --env-file ./backend/env/.env -p tg-bot-creation up -d backend --build --force-recreate
 
 
 
