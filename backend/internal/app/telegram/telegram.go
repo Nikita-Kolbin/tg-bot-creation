@@ -75,6 +75,37 @@ func (c *TGClient) Send(token string, chatID int, msg string, withFormat bool) (
 	return resp, nil
 }
 
+func (c *TGClient) SendWithReplyKeyboard(token string, chatID int, msg string, keyboard *model.ReplyKeyboardMarkup, withFormat bool) (*model.Response, error) {
+	q := url.Values{}
+	q.Add("chat_id", strconv.Itoa(chatID))
+	q.Add("text", msg)
+
+	if withFormat {
+		q.Add("parse_mode", parseMode)
+		q.Add("link_preview_options", disablePreview)
+	}
+
+	if keyboard != nil {
+		kbJSON, err := json.Marshal(keyboard)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal keyboard: %w", err)
+		}
+		q.Add("reply_markup", string(kbJSON))
+	}
+
+	byteResp, err := c.doRequest(token, sendMessageMethod, q)
+	if err != nil {
+		return nil, fmt.Errorf("can't send message: %w", err)
+	}
+
+	resp := &model.Response{}
+	if err := json.Unmarshal(byteResp, resp); err != nil {
+		return nil, fmt.Errorf("can't parse response: %w", err)
+	}
+
+	return resp, nil
+}
+
 func newBasePath(token string) string {
 	return "bot" + token
 }
