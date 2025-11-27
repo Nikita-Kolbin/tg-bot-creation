@@ -3,19 +3,7 @@ import { Routes, Route, Link } from 'react-router-dom'
 import { PrivateRoute } from './routes/PrivateRoute'
 import { useAppDispatch, useAppSelector } from './app/hooks'
 import { logout } from './features/auth/authSlice'
-
-const Dashboard: React.FC = () => {
-	const user = useAppSelector(s => s.auth.user)
-	return (
-		<div style={{ padding: 24 }}>
-			<h1>Dashboard</h1>
-			<p>Welcome, {user?.name || 'user'}!</p>
-			<p>
-				<Link to='/scenarios'>Scenarios</Link>
-			</p>
-		</div>
-	)
-}
+import Dashboard from './pages/Dashboard'
 
 const App: React.FC = () => {
 	const dispatch = useAppDispatch()
@@ -23,7 +11,7 @@ const App: React.FC = () => {
 
 	return (
 		<div>
-			<header
+			{/* <header
 				style={{
 					display: 'flex',
 					justifyContent: 'space-between',
@@ -45,7 +33,7 @@ const App: React.FC = () => {
 						</>
 					)}
 				</div>
-			</header>
+			</header> */}
 
 			<main style={{ padding: 12 }}>
 				<Routes>
