@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS products;
+
 DROP TABLE IF EXISTS tg_user_steps;
 
 DROP TABLE IF EXISTS buttons;

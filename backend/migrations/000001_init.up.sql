@@ -70,3 +70,18 @@ CREATE TABLE tg_user_steps (
 
 CREATE UNIQUE INDEX unique_tg_user_steps_username_bot_id ON tg_user_steps (username, bot_id);
 
+
+
+--- Товары в мини апп
+CREATE TABLE products (
+    id BIGSERIAL PRIMARY KEY,
+    bot_id BIGINT NOT NULL REFERENCES bots(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL,
+    picture_urls TEXT[] NOT NULL DEFAULT '{}',
+    preview_url TEXT NOT NULL,
+    price INTEGER NOT NULL DEFAULT 0,
+    active BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);

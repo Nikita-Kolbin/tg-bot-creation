@@ -12,10 +12,14 @@ type repository interface {
 	GetUser(ctx context.Context, username, passwordHash string) (*model.User, error)
 
 	CreateBot(ctx context.Context, bot *model.Bot) (*model.Bot, error)
+	UpdateBot(ctx context.Context, bot *model.Bot) error
+	DeleteBot(ctx context.Context, botID int, ownerUserID int) error
+	GetBotByID(ctx context.Context, botID int) (*model.Bot, error)
 	GetActiveBots(ctx context.Context) ([]*model.Bot, error)
 	GetBotTgOffset(ctx context.Context, botID int) (int, error)
 	UpdateBotTgOffset(ctx context.Context, botID int, newOffset int) error
 	IsBotOwner(ctx context.Context, botID int, userID int) (bool, error)
+	GetBotsByOwner(ctx context.Context, ownerUserID int) ([]*model.Bot, error)
 
 	UpdateScenario(ctx context.Context, botID int, steps []*model.Step, buttons []*model.Button) error
 	GetScenarioByBotID(ctx context.Context, botID int) ([]*model.Step, map[string]*model.Button, error)
@@ -23,6 +27,12 @@ type repository interface {
 
 	UpsertTgUserStep(ctx context.Context, step *model.TgUserStep) error
 	GetCurrentStepNumber(ctx context.Context, username string, botID int) (int, error)
+
+	CreateProduct(ctx context.Context, product *model.Product) (*model.Product, error)
+	UpdateProduct(ctx context.Context, product *model.Product) error
+	DeleteProduct(ctx context.Context, productID int) error
+	GetProductsByBot(ctx context.Context, botID int64) ([]*model.Product, error)
+	GetProductByID(ctx context.Context, productID int) (*model.Product, error)
 }
 
 type tgClient interface {
