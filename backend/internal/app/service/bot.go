@@ -12,6 +12,18 @@ func (s *Service) CreateBot(ctx context.Context, bot *model.Bot) (*model.Bot, er
 	return s.repo.CreateBot(ctx, bot)
 }
 
+func (s *Service) UpdateBot(ctx context.Context, bot *model.Bot) error {
+	return s.repo.UpdateBot(ctx, bot)
+}
+
+func (s *Service) DeleteBot(ctx context.Context, botID int, ownerUserID int) error {
+	return s.repo.DeleteBot(ctx, botID, ownerUserID)
+}
+
+func (s *Service) GetBotByID(ctx context.Context, botID int) (*model.Bot, error) {
+	return s.repo.GetBotByID(ctx, botID)
+}
+
 func (s *Service) UpdateActiveBotsJob(ctx context.Context) error {
 	bots, err := s.repo.GetActiveBots(ctx)
 	if err != nil {
@@ -97,6 +109,10 @@ func (s *Service) GetBotScenario(ctx context.Context, botID int) (*dto.GetBotSce
 	}
 
 	return req, nil
+}
+
+func (s *Service) GetUserBots(ctx context.Context, userID int) ([]*model.Bot, error) {
+	return s.repo.GetBotsByOwner(ctx, userID)
 }
 
 func (s *Service) getActiveBots() []*model.Bot {

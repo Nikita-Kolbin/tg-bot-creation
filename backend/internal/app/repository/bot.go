@@ -33,6 +33,68 @@ func (r *Repository) CreateBot(ctx context.Context, bot *model.Bot) (*model.Bot,
 	return createdBot, nil
 }
 
+func (r *Repository) GetBotByID(ctx context.Context, botID int) (*model.Bot, error) {
+	query := `
+        SELECT id, name, description, token, status, owner_user_id, created_at, updated_at
+        FROM bots 
+        WHERE id = $1
+    `
+
+	bot := &model.Bot{}
+	err := r.conn.GetContext(ctx, bot, query, botID)
+	if err != nil {
+		return nil, err
+	}
+	return bot, nil
+}
+
+func (r *Repository) UpdateBot(ctx context.Context, bot *model.Bot) error {
+	query := `
+        UPDATE bots 
+        SET name = $1, description = $2, token = $3, status = $4, updated_at = NOW()
+        WHERE id = $5 AND owner_user_id = $6
+    `
+
+	result, err := r.conn.ExecContext(ctx, query,
+		bot.Name,
+		bot.Description,
+		bot.Token,
+		bot.Status,
+		bot.ID,
+		bot.OwnerUserID,
+	)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
+}
+
+func (r *Repository) DeleteBot(ctx context.Context, botID int, ownerUserID int) error {
+	query := `DELETE FROM bots WHERE id = $1 AND owner_user_id = $2`
+
+	result, err := r.conn.ExecContext(ctx, query, botID, ownerUserID)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
+}
+
 func (r *Repository) GetActiveBots(ctx context.Context) ([]*model.Bot, error) {
 	query := `
     SELECT id, name, description, token, status, owner_user_id, created_at, updated_at
@@ -40,6 +102,22 @@ func (r *Repository) GetActiveBots(ctx context.Context) ([]*model.Bot, error) {
 
 	var bots []*model.Bot
 	err := r.conn.SelectContext(ctx, &bots, query)
+	if err != nil {
+		return nil, err
+	}
+
+	return bots, nil
+}
+
+func (r *Repository) GetBotsByOwner(ctx context.Context, ownerUserID int) ([]*model.Bot, error) {
+	query := `
+        SELECT id, name, description, token, status, owner_user_id, created_at, updated_at
+        FROM bots 
+        WHERE owner_user_id = $1
+        ORDER BY created_at DESC`
+
+	var bots []*model.Bot
+	err := r.conn.SelectContext(ctx, &bots, query, ownerUserID)
 	if err != nil {
 		return nil, err
 	}

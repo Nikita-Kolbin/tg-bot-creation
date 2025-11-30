@@ -18,6 +18,17 @@ type BotResponse struct {
 	UpdatedAt   string `json:"updated_at"`
 }
 
+type BotsListResponse struct {
+	Bots []*BotResponse `json:"bots"`
+}
+
+type BotUpdateRequest struct {
+	Name        *string `json:"name,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Token       *string `json:"token,omitempty"`
+	Status      *string `json:"status,omitempty"`
+}
+
 type SetBotScenarioRequest struct {
 	BotID int     `json:"bot_id"`
 	Steps []*Step `json:"steps"`
