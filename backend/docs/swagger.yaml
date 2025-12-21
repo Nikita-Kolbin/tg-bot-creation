@@ -26,6 +26,24 @@ definitions:
       updated_at:
         type: string
     type: object
+  dto.BotUpdateRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
+      token:
+        type: string
+    type: object
+  dto.BotsListResponse:
+    properties:
+      bots:
+        items:
+          $ref: '#/definitions/dto.BotResponse'
+        type: array
+    type: object
   dto.Button:
     properties:
       next_step:
@@ -37,6 +55,70 @@ definitions:
     properties:
       error:
         type: string
+    type: object
+  dto.ProductCreateRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      picture_urls:
+        items:
+          type: string
+        type: array
+      preview_url:
+        type: string
+      price:
+        type: integer
+    type: object
+  dto.ProductResponse:
+    properties:
+      active:
+        type: boolean
+      bot_id:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      picture_urls:
+        items:
+          type: string
+        type: array
+      preview_url:
+        type: string
+      price:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  dto.ProductUpdateRequest:
+    properties:
+      active:
+        type: boolean
+      description:
+        type: string
+      name:
+        type: string
+      picture_urls:
+        items:
+          type: string
+        type: array
+      preview_url:
+        type: string
+      price:
+        type: integer
+    type: object
+  dto.ProductsListResponse:
+    properties:
+      products:
+        items:
+          $ref: '#/definitions/dto.ProductResponse'
+        type: array
     type: object
   dto.SetBotScenarioRequest:
     properties:
@@ -80,6 +162,349 @@ info:
   title: TG Bot Creator
   version: "1.0"
 paths:
+  /bot/{bot_id}:
+    delete:
+      parameters:
+      - description: Bot ID
+        in: path
+        name: bot_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Telegram bot
+      tags:
+      - bot
+    get:
+      parameters:
+      - description: Bot ID
+        in: path
+        name: bot_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.BotResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Telegram bot by ID
+      tags:
+      - bot
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bot ID
+        in: path
+        name: bot_id
+        required: true
+        type: integer
+      - description: bot update request
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.BotUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.BotResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Telegram bot
+      tags:
+      - bot
+  /bot/{bot_id}/product:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bot ID
+        in: path
+        name: bot_id
+        required: true
+        type: integer
+      - description: product creation request
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProductCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create new product for bot
+      tags:
+      - product
+  /bot/{bot_id}/product/{product_id}:
+    delete:
+      parameters:
+      - description: Bot ID
+        in: path
+        name: bot_id
+        required: true
+        type: integer
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete product
+      tags:
+      - product
+    get:
+      parameters:
+      - description: Bot ID
+        in: path
+        name: bot_id
+        required: true
+        type: integer
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get product by ID
+      tags:
+      - product
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bot ID
+        in: path
+        name: bot_id
+        required: true
+        type: integer
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: integer
+      - description: product update request
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProductUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update product
+      tags:
+      - product
+  /bot/{bot_id}/products:
+    get:
+      parameters:
+      - description: Bot ID
+        in: path
+        name: bot_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProductsListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all products for bot
+      tags:
+      - product
   /bot/create:
     post:
       consumes:
@@ -109,6 +534,24 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Create new Telegram bot
+      tags:
+      - bot
+  /bot/list:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.BotsListResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all bots for current user
       tags:
       - bot
   /bot/scenario:

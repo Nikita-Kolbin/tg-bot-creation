@@ -36,6 +36,9 @@ func (s *Service) ProcessTelegramUpdatesJob(ctx context.Context) {
 
 func (s *Service) parseTgBotUpdates(ctx context.Context, bot *model.Bot) error {
 	offset, err := s.repo.GetBotTgOffset(ctx, bot.ID)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil
+	}
 	if err != nil {
 		return err // TODO: везде врапнуть ошибки
 	}
