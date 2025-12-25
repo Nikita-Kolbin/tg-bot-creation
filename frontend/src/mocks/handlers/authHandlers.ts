@@ -5,7 +5,12 @@ interface AuthRequestBody {
 	password: string
 }
 
-let mockUsers: AuthRequestBody[] = []
+const mockUsers: AuthRequestBody[] = [
+	{
+		email: '1@1.ru',
+		password: '1@1.ru',
+	},
+]
 
 export const authHandlers = [
 	// Регистрация

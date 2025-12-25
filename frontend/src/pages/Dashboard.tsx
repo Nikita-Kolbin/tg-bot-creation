@@ -7,10 +7,7 @@ import BotsGrid from '../components/BotsGrid'
 export default function Dashboard() {
 	const { data: bots = [], isLoading, isError } = useGetBotsQuery()
 
-	const handleCreate = () => {
-		// простой вариант: открыть страницу/модал создания
-		alert('Открыть форму создания бота (реализовать позже)')
-	}
+	
 
 	return (
 		<Box sx={{ display: 'flex' }}>
@@ -25,7 +22,7 @@ export default function Dashboard() {
 				) : isError ? (
 					<Typography color='error'>Ошибка загрузки ботов</Typography>
 				) : (
-					<BotsGrid bots={bots} onCreate={handleCreate} />
+					<BotsGrid bots={bots} />
 				)}
 			</Container>
 		</Box>

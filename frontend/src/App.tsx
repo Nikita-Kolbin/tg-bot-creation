@@ -1,40 +1,12 @@
 import React from 'react'
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import { PrivateRoute } from './routes/PrivateRoute'
-import { useAppDispatch, useAppSelector } from './app/hooks'
-import { logout } from './features/auth/authSlice'
 import Dashboard from './pages/Dashboard'
+import BotEditScenario from './pages/BotEditScenario'
 
 const App: React.FC = () => {
-	const dispatch = useAppDispatch()
-	const token = useAppSelector(s => s.auth.token)
-
 	return (
 		<div>
-			{/* <header
-				style={{
-					display: 'flex',
-					justifyContent: 'space-between',
-					padding: 12,
-				}}
-			>
-				<div>
-					<Link to='/'>TG Platform</Link>
-				</div>
-				<div>
-					{token ? (
-						<>
-							<button onClick={() => dispatch(logout())}>Logout</button>
-						</>
-					) : (
-						<>
-							<Link to='/signin'>Sign in</Link> |{' '}
-							<Link to='/signup'>Sign up</Link>
-						</>
-					)}
-				</div>
-			</header> */}
-
 			<main style={{ padding: 12 }}>
 				<Routes>
 					<Route
@@ -42,6 +14,22 @@ const App: React.FC = () => {
 						element={
 							<PrivateRoute>
 								<Dashboard />
+							</PrivateRoute>
+						}
+					/>
+					<Route
+						path='/api/bot/edit/:id'
+						element={
+							<PrivateRoute>
+								<BotEditScenario />
+							</PrivateRoute>
+						}
+					/>
+					<Route
+						path='/api/bot/edit/:id/scenario'
+						element={
+							<PrivateRoute>
+								<div>Редактирование сценария (заглушка)</div>
 							</PrivateRoute>
 						}
 					/>

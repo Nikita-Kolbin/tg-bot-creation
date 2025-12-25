@@ -6,76 +6,147 @@ import {
 	Avatar,
 	IconButton,
 	Typography,
-	Chip,
 	Tooltip,
+	Box,
+	Switch,
+	Alert,
 } from '@mui/material'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import LinkIcon from '@mui/icons-material/Link'
+import SettingsIcon from '@mui/icons-material/Settings'
+import EditIcon from '@mui/icons-material/Edit'
 import LaunchIcon from '@mui/icons-material/Launch'
 import type { Bot } from '../types/bot'
 
 type Props = {
 	bot: Bot
+	onEdit?: (bot: Bot) => void
+	onEditScenario?: (bot: Bot) => void
+	onStatusChange?: (bot: Bot, active: boolean) => void
+	statusError?: string | null
 }
 
-export default function BotCard({ bot }: Props) {
+export default function BotCard({ bot, onEdit, onEditScenario, onStatusChange, statusError }: Props) {
 	const copyLink = async () => {
 		try {
 			if (bot.link) {
 				await navigator.clipboard.writeText(bot.link)
 				alert('Ссылка скопирована')
 			}
-		} catch (e) {
-			alert('Не удалось скопировать', e)
+		} catch {
+			alert('Не удалось скопировать')
 		}
 	}
 
+	const handleStatusChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		onStatusChange?.(bot, event.target.checked)
+	}
+
+	const truncatedDescription = bot.description ? bot.description.slice(0, 100) + (bot.description.length > 100 ? '...' : '') : ''
+
 	return (
-		<Card variant='outlined' sx={{ width: 300 }}>
+		<Card
+			variant='outlined'
+			sx={{
+				width: 300,
+				borderRadius: 3,
+				boxShadow: 2,
+				transition: 'all 0.3s ease',
+				background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+				'&:hover': {
+					boxShadow: 6,
+					transform: 'translateY(-4px)',
+				},
+			}}
+		>
 			<CardHeader
 				avatar={
-					<Avatar src={bot.avatarUrl ?? undefined}>
+					<Avatar
+						src={bot.avatarUrl ?? undefined}
+						sx={{ bgcolor: bot.active ? 'success.main' : 'error.main' }}
+					>
 						{bot.name?.[0]?.toUpperCase()}
 					</Avatar>
 				}
 				action={
-					<Tooltip title='Копировать ссылку'>
-						<IconButton onClick={copyLink}>
-							<ContentCopyIcon />
-						</IconButton>
-					</Tooltip>
+					<Box>
+						<Tooltip title='Редактировать сценарий'>
+							<IconButton onClick={() => onEditScenario?.(bot)} size='small'>
+								<EditIcon />
+							</IconButton>
+						</Tooltip>
+						<Tooltip title='Настройки'>
+							<IconButton onClick={() => onEdit?.(bot)} size='small'>
+								<SettingsIcon />
+							</IconButton>
+						</Tooltip>
+					</Box>
 				}
 				title={bot.name}
 				subheader={new Date(bot.createdAt).toLocaleString()}
+				sx={{ pb: 1 }}
 			/>
-			<CardContent>
-				<Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
-					Статус:{' '}
-					{bot.active ? (
-						<Chip label='Активен' color='success' size='small' />
-					) : (
-						<Chip label='Неактивен' color='default' size='small' />
-					)}
-				</Typography>
-
-				<Typography
-					variant='body2'
-					sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-				>
-					<LinkIcon fontSize='small' />{' '}
-					<a href={bot.link} target='_blank' rel='noreferrer'>
-						{bot.link}
-					</a>
-					<IconButton
-						size='small'
-						href={bot.link}
-						target='_blank'
-						rel='noreferrer'
-						aria-label='open'
-					>
-						<LaunchIcon fontSize='small' />
-					</IconButton>
-				</Typography>
+			<CardContent sx={{ pt: 0 }}>
+				{bot.description && (
+					<Typography variant='body2' sx={{ mb: 2, color: 'text.secondary' }}>
+						{truncatedDescription}
+					</Typography>
+				)}
+				{statusError && (
+					<Alert severity='error' sx={{ mb: 1, py: 0.5 }}>
+						{statusError}
+					</Alert>
+				)}
+				<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+					<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+						<Typography variant='body2' sx={{ fontWeight: 500 }}>
+							Статус:
+						</Typography>
+						<Switch
+							checked={bot.active}
+							onChange={handleStatusChange}
+							size='small'
+							sx={{
+								'& .MuiSwitch-switchBase.Mui-checked': {
+									color: 'success.main',
+									'& + .MuiSwitch-track': {
+										backgroundColor: 'success.main',
+									},
+								},
+								'& .MuiSwitch-switchBase': {
+									color: 'error.main',
+									'& + .MuiSwitch-track': {
+										backgroundColor: 'error.main',
+									},
+								},
+							}}
+						/>
+					</Box>
+					<Box sx={{ display: 'flex', gap: 0.5 }}>
+						{bot.link && (
+							<Tooltip title='Открыть ссылку'>
+								<IconButton
+									size='small'
+									href={bot.link}
+									target='_blank'
+									rel='noreferrer'
+									aria-label='open'
+									sx={{ color: 'primary.main' }}
+								>
+									<LaunchIcon fontSize='small' />
+								</IconButton>
+							</Tooltip>
+						)}
+						<Tooltip title='Копировать ссылку'>
+							<IconButton
+								onClick={copyLink}
+								size='small'
+								sx={{ color: 'primary.main' }}
+							>
+								<ContentCopyIcon fontSize='small' />
+							</IconButton>
+						</Tooltip>
+					</Box>
+				</Box>
 			</CardContent>
 		</Card>
 	)

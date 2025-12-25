@@ -16,9 +16,9 @@ const container = document.getElementById('root')!
 const root = createRoot(container)
 
 // mock switch
-import { startMockServer } from './mocks'
+//import { startMockServer } from './mocks'
  
-startMockServer()
+//startMockServer()
 
 root.render(
 	<React.StrictMode>
