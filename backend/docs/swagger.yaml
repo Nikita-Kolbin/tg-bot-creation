@@ -52,6 +52,24 @@ definitions:
           $ref: '#/definitions/dto.BotResponse'
         type: array
     type: object
+  dto.BotUpdateRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
+      token:
+        type: string
+    type: object
+  dto.BotsListResponse:
+    properties:
+      bots:
+        items:
+          $ref: '#/definitions/dto.BotResponse'
+        type: array
+    type: object
   dto.Button:
     properties:
       next_step:
