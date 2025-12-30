@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"fmt"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/api/dto"
 	"net/http"
 	"time"
@@ -40,8 +41,11 @@ func (i *Bot) GetUserBots(w http.ResponseWriter, r *http.Request) {
 			ID:          bot.ID,
 			Name:        bot.Name,
 			Description: bot.Description,
+			TokenMask:   makeTokenMask(bot.Token),
 			Status:      bot.Status,
+			Username:    bot.Username,
 			OwnerUserID: bot.OwnerUserID,
+			MiniAppURL:  makeMiniAppURL(i.serverHostPort, bot.ID),
 			CreatedAt:   bot.CreatedAt.Format(time.RFC3339),
 			UpdatedAt:   bot.UpdatedAt.Format(time.RFC3339),
 		})
@@ -51,4 +55,15 @@ func (i *Bot) GetUserBots(w http.ResponseWriter, r *http.Request) {
 
 	render.Status(r, http.StatusOK)
 	render.JSON(w, r, resp)
+}
+
+func makeTokenMask(token string) string {
+	if len(token) <= 10 {
+		return token
+	}
+	return token[:10] + "***" + token[len(token)-5:]
+}
+
+func makeMiniAppURL(serverHostPort string, botID int) string {
+	return fmt.Sprintf("%s/miniApp/%d", serverHostPort, botID)
 }

@@ -53,6 +53,7 @@ func (i *Bot) CreateBot(w http.ResponseWriter, r *http.Request) {
 		Name:        req.Name,
 		Description: req.Description,
 		Token:       req.Token,
+		Username:    req.Username,
 		OwnerUserID: ownerUserID,
 	}
 
@@ -74,7 +75,9 @@ func (i *Bot) CreateBot(w http.ResponseWriter, r *http.Request) {
 		Name:        createdBot.Name,
 		Description: createdBot.Description,
 		Status:      createdBot.Status,
+		Username:    createdBot.Username,
 		OwnerUserID: createdBot.OwnerUserID,
+		MiniAppURL:  makeMiniAppURL(i.serverHostPort, createdBot.ID),
 		CreatedAt:   createdBot.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:   createdBot.UpdatedAt.Format(time.RFC3339),
 	}

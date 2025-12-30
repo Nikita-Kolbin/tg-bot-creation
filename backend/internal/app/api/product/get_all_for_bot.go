@@ -1,13 +1,14 @@
 package product
 
 import (
+	"net/http"
+	"strconv"
+	
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/api/dto"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/pkg/logger"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/pkg/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"net/http"
-	"strconv"
 )
 
 // GetProducts godoc

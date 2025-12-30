@@ -20,11 +20,13 @@ type Service interface {
 }
 
 type Bot struct {
-	srv Service
+	serverHostPort string
+	srv            Service
 }
 
-func NewAPI(srv Service) *Bot {
+func NewAPI(srv Service, serverHostPort string) *Bot {
 	return &Bot{
-		srv: srv,
+		srv:            srv,
+		serverHostPort: serverHostPort,
 	}
 }

@@ -6,14 +6,18 @@ type BotCreateRequest struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Token       string `json:"token"`
+	Username    string `json:"username"`
 }
 
 type BotResponse struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
+	TokenMask   string `json:"token_mask"`
 	Status      string `json:"status"`
+	Username    string `json:"username"`
 	OwnerUserID int    `json:"owner_user_id"`
+	MiniAppURL  string `json:"mini_app_url"`
 	CreatedAt   string `json:"created_at"`
 	UpdatedAt   string `json:"updated_at"`
 }
@@ -27,6 +31,7 @@ type BotUpdateRequest struct {
 	Description *string `json:"description,omitempty"`
 	Token       *string `json:"token,omitempty"`
 	Status      *string `json:"status,omitempty"`
+	Username    *string `json:"username,omitempty"`
 }
 
 type SetBotScenarioRequest struct {

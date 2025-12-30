@@ -16,7 +16,9 @@ type Bot struct {
 	Description string    `db:"description" json:"description"`
 	Token       string    `db:"token" json:"token"`
 	Status      string    `db:"status" json:"status"`
+	Username    string    `db:"username" json:"username"`
 	OwnerUserID int       `db:"owner_user_id" json:"owner_user_id"`
+	MiniAppURL  string    `db:"mini_app_url" json:"mini_app_url"`
 	CreatedAt   time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt   time.Time `db:"updated_at" json:"updated_at"`
 }
