@@ -8,6 +8,8 @@ definitions:
         type: string
       token:
         type: string
+      username:
+        type: string
     type: object
   dto.BotResponse:
     properties:
@@ -17,13 +19,19 @@ definitions:
         type: string
       id:
         type: integer
+      mini_app_url:
+        type: string
       name:
         type: string
       owner_user_id:
         type: integer
       status:
         type: string
+      token_mask:
+        type: string
       updated_at:
+        type: string
+      username:
         type: string
     type: object
   dto.BotUpdateRequest:
@@ -35,6 +43,8 @@ definitions:
       status:
         type: string
       token:
+        type: string
+      username:
         type: string
     type: object
   dto.BotsListResponse:

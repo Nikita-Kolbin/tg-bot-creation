@@ -73,8 +73,11 @@ func (i *Bot) GetBotByID(w http.ResponseWriter, r *http.Request) {
 		ID:          bot.ID,
 		Name:        bot.Name,
 		Description: bot.Description,
+		TokenMask:   makeTokenMask(bot.Token),
 		Status:      bot.Status,
+		Username:    bot.Username,
 		OwnerUserID: bot.OwnerUserID,
+		MiniAppURL:  makeMiniAppURL(i.serverHostPort, bot.ID),
 		CreatedAt:   bot.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:   bot.UpdatedAt.Format(time.RFC3339),
 	}

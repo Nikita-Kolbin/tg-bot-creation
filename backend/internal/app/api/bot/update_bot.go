@@ -81,18 +81,21 @@ func (i *Bot) UpdateBot(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Обновляем только переданные поля
-	if req.Name != nil {
+	if req.Name != nil && len(*req.Name) != 0 {
 		bot.Name = *req.Name
 	}
-	if req.Description != nil {
+	if req.Description != nil && len(*req.Description) != 0 {
 		bot.Description = *req.Description
 	}
-	if req.Token != nil {
+	if req.Token != nil && len(*req.Token) != 0 {
 		bot.Token = *req.Token
 	}
 	// TODO: сделать валидация на статус
-	if req.Status != nil {
+	if req.Status != nil && len(*req.Status) != 0 {
 		bot.Status = *req.Status
+	}
+	if req.Username != nil && len(*req.Username) != 0 {
+		bot.Username = *req.Username
 	}
 	bot.OwnerUserID = userID
 
@@ -108,8 +111,11 @@ func (i *Bot) UpdateBot(w http.ResponseWriter, r *http.Request) {
 		ID:          bot.ID,
 		Name:        bot.Name,
 		Description: bot.Description,
+		TokenMask:   makeTokenMask(bot.Token),
 		Status:      bot.Status,
+		Username:    bot.Username,
 		OwnerUserID: bot.OwnerUserID,
+		MiniAppURL:  makeMiniAppURL(i.serverHostPort, bot.ID),
 		CreatedAt:   bot.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:   bot.UpdatedAt.Format(time.RFC3339),
 	}

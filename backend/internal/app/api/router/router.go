@@ -25,7 +25,7 @@ type service interface {
 	GetJWTSecret() string
 }
 
-func New(_ context.Context, srv service, address string) http.Handler {
+func New(_ context.Context, srv service, address, serverHostPort string) http.Handler {
 	router := chi.NewRouter()
 
 	// middleware
@@ -48,7 +48,7 @@ func New(_ context.Context, srv service, address string) http.Handler {
 
 	// APIs
 	userAPI := user.NewAPI(srv)
-	botAPI := bot.NewAPI(srv)
+	botAPI := bot.NewAPI(srv, serverHostPort)
 	productAPI := product.NewAPI(srv)
 
 	// handlers

@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/api/router"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/config"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/repository"
@@ -10,7 +12,6 @@ import (
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/telegram"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/pkg/httpserver"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/pkg/logger"
-	"time"
 )
 
 // @title           TG Bot Creator
@@ -80,7 +81,7 @@ func run(ctx context.Context) error {
 
 	// Сервер
 
-	r := router.New(ctx, srv, cfg.Listener.GetHostPort())
+	r := router.New(ctx, srv, cfg.Listener.GetHostPort(), cfg.ServerHostPort)
 
 	server := httpserver.New(
 		cfg.Listener.GetHostPort(), r,

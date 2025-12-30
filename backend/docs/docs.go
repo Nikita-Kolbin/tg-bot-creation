@@ -856,6 +856,9 @@ const docTemplate = `{
                 },
                 "token": {
                     "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },
@@ -871,6 +874,9 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "mini_app_url": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -880,7 +886,13 @@ const docTemplate = `{
                 "status": {
                     "type": "string"
                 },
+                "token_mask": {
+                    "type": "string"
+                },
                 "updated_at": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }
@@ -898,6 +910,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "token": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

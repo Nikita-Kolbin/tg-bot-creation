@@ -11,9 +11,9 @@ import (
 
 func (r *Repository) CreateBot(ctx context.Context, bot *model.Bot) (*model.Bot, error) {
 	query := `
-    INSERT INTO bots (name, description, token, status, owner_user_id)
-    VALUES ($1, $2, $3, $4, $5)
-    RETURNING id, name, description, token, status, owner_user_id, created_at, updated_at`
+    INSERT INTO bots (name, description, token, status, username, owner_user_id)
+    VALUES ($1, $2, $3, $4, $5, $6)
+    RETURNING id, name, description, token, status, username, owner_user_id, created_at, updated_at`
 
 	createdBot := &model.Bot{}
 	err := r.conn.GetContext(ctx, createdBot, query,
@@ -21,6 +21,7 @@ func (r *Repository) CreateBot(ctx context.Context, bot *model.Bot) (*model.Bot,
 		bot.Description,
 		bot.Token,
 		model.BotStatusActive, // TODO: поменять на неактивный при первом создании
+		bot.Username,
 		bot.OwnerUserID,
 	)
 	if isSQLError(err, model.UniqueConstraintViolationCode) {
@@ -35,7 +36,7 @@ func (r *Repository) CreateBot(ctx context.Context, bot *model.Bot) (*model.Bot,
 
 func (r *Repository) GetBotByID(ctx context.Context, botID int) (*model.Bot, error) {
 	query := `
-        SELECT id, name, description, token, status, owner_user_id, created_at, updated_at
+        SELECT id, name, description, token, status, username, owner_user_id, created_at, updated_at
         FROM bots 
         WHERE id = $1
     `
@@ -51,8 +52,8 @@ func (r *Repository) GetBotByID(ctx context.Context, botID int) (*model.Bot, err
 func (r *Repository) UpdateBot(ctx context.Context, bot *model.Bot) error {
 	query := `
         UPDATE bots 
-        SET name = $1, description = $2, token = $3, status = $4, updated_at = NOW()
-        WHERE id = $5 AND owner_user_id = $6
+        SET name = $1, description = $2, token = $3, status = $4, username = $5, updated_at = NOW()
+        WHERE id = $6 AND owner_user_id = $7
     `
 
 	result, err := r.conn.ExecContext(ctx, query,
@@ -60,6 +61,7 @@ func (r *Repository) UpdateBot(ctx context.Context, bot *model.Bot) error {
 		bot.Description,
 		bot.Token,
 		bot.Status,
+		bot.Username,
 		bot.ID,
 		bot.OwnerUserID,
 	)
@@ -97,7 +99,7 @@ func (r *Repository) DeleteBot(ctx context.Context, botID int, ownerUserID int) 
 
 func (r *Repository) GetActiveBots(ctx context.Context) ([]*model.Bot, error) {
 	query := `
-    SELECT id, name, description, token, status, owner_user_id, created_at, updated_at
+    SELECT id, name, description, token, status, username, owner_user_id, created_at, updated_at
     FROM bots WHERE status = 'active'`
 
 	var bots []*model.Bot
@@ -111,7 +113,7 @@ func (r *Repository) GetActiveBots(ctx context.Context) ([]*model.Bot, error) {
 
 func (r *Repository) GetBotsByOwner(ctx context.Context, ownerUserID int) ([]*model.Bot, error) {
 	query := `
-        SELECT id, name, description, token, status, owner_user_id, created_at, updated_at
+        SELECT id, name, description, token, status, username, owner_user_id, created_at, updated_at
         FROM bots 
         WHERE owner_user_id = $1
         ORDER BY created_at DESC`
