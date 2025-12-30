@@ -874,6 +874,9 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "mini_app_url": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -910,34 +913,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.BotsListResponse": {
-            "type": "object",
-            "properties": {
-                "bots": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dto.BotResponse"
-                    }
-                }
-            }
-        },
-        "dto.BotUpdateRequest": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "token": {
                     "type": "string"
                 }
             }
