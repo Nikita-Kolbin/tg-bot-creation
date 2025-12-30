@@ -10,8 +10,8 @@ services:
     depends_on:
       postgresql:
         condition: service_healthy
-      redis:
-        condition: service_healthy
+#      redis:
+#        condition: service_healthy
 
 #  frontend:
 #    build: ./frontend
