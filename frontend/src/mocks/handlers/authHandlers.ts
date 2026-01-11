@@ -5,11 +5,16 @@ interface AuthRequestBody {
 	password: string
 }
 
-let mockUsers: AuthRequestBody[] = []
+const mockUsers: AuthRequestBody[] = [
+	{
+		email: '1@1.ru',
+		password: '1@1.ru',
+	},
+]
 
 export const authHandlers = [
 	// Регистрация
-	http.post('/api/admin/sign-up', async ({ request }) => {
+	http.post('/api/user/sign-up', async ({ request }) => {
 		const body = (await request.json()) as AuthRequestBody
 		const { email, password } = body
 
@@ -29,7 +34,7 @@ export const authHandlers = [
 	}),
 
 	// Авторизация
-	http.post('/api/admin/sign-in', async ({ request }) => {
+	http.post('/api/user/sign-in', async ({ request }) => {
 		const body = (await request.json()) as AuthRequestBody
 		const { email, password } = body
 

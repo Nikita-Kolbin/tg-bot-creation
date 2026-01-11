@@ -8,11 +8,12 @@ export const apiSlice = createApi({
 		prepareHeaders: (headers, { getState }) => {
 			const token = (getState() as RootState).auth.token
 			if (token) {
-				headers.set('authorization', `Bearer ${token}`)
+				headers.set('X-Token', token)
 			}
 			headers.set('content-type', 'application/json')
 			return headers
 		},
 	}),
+	tagTypes: ['Bots'],
 	endpoints: () => ({}),
 })
