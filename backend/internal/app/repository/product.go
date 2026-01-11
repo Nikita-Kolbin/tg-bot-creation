@@ -89,13 +89,22 @@ func (r *Repository) DeleteProduct(ctx context.Context, productID int) error {
 	return nil
 }
 
-func (r *Repository) GetProductsByBot(ctx context.Context, botID int64) ([]*model.Product, error) {
+func (r *Repository) GetProductsByBot(ctx context.Context, botID int64, onlyActive bool) ([]*model.Product, error) {
 	query := `
         SELECT id, bot_id, name, description, picture_urls, preview_url, price, active, created_at, updated_at
         FROM products 
         WHERE bot_id = $1 
         ORDER BY created_at DESC
     `
+
+	if onlyActive {
+		query = `
+        SELECT id, bot_id, name, description, picture_urls, preview_url, price, active, created_at, updated_at
+        FROM products 
+        WHERE bot_id = $1 AND active = true
+        ORDER BY created_at DESC
+    `
+	}
 
 	rows, err := r.conn.QueryContext(ctx, query, botID)
 	if err != nil {

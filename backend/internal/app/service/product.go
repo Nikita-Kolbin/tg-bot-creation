@@ -17,8 +17,8 @@ func (s *Service) DeleteProduct(ctx context.Context, productID int) error {
 	return s.repo.DeleteProduct(ctx, productID)
 }
 
-func (s *Service) GetProductsByBot(ctx context.Context, botID int64) ([]*model.Product, error) {
-	return s.repo.GetProductsByBot(ctx, botID)
+func (s *Service) GetProductsByBot(ctx context.Context, botID int64, onlyActive bool) ([]*model.Product, error) {
+	return s.repo.GetProductsByBot(ctx, botID, onlyActive)
 }
 
 func (s *Service) GetProductByID(ctx context.Context, productID int) (*model.Product, error) {

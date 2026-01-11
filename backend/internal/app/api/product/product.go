@@ -10,7 +10,7 @@ type Service interface {
 	CreateProduct(ctx context.Context, product *model.Product) (*model.Product, error)
 	UpdateProduct(ctx context.Context, product *model.Product) error
 	DeleteProduct(ctx context.Context, productID int) error
-	GetProductsByBot(ctx context.Context, botID int64) ([]*model.Product, error)
+	GetProductsByBot(ctx context.Context, botID int64, onlyActive bool) ([]*model.Product, error)
 	GetProductByID(ctx context.Context, productID int) (*model.Product, error)
 
 	IsBotOwner(ctx context.Context, botID int, userID int) (bool, error)
