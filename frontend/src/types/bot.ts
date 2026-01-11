@@ -3,6 +3,7 @@ export type Bot = {
 	name: string
 	description?: string
 	avatarUrl?: string | null
+	tokenMask: string | null
 	createdAt: string // ISO date
 	active: boolean
 	link?: string // ссылка для копирования

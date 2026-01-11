@@ -35,7 +35,17 @@ type Props = {
 	isSaving?: boolean
 }
 
-export default function EditBotModal({ open, onClose, bot, onSave, onDelete, deleteError, isDeleting, saveError, isSaving }: Props) {
+export default function EditBotModal({
+	open,
+	onClose,
+	bot,
+	onSave,
+	onDelete,
+	deleteError,
+	isDeleting,
+	saveError,
+	isSaving,
+}: Props) {
 	const [confirmOpen, setConfirmOpen] = useState(false)
 	const { control, handleSubmit, reset } = useForm<UpdateBotDto>({
 		resolver: yupResolver(schema),
@@ -48,13 +58,17 @@ export default function EditBotModal({ open, onClose, bot, onSave, onDelete, del
 				name: bot.name,
 				description: bot.description || '',
 				status: bot.active ? 'active' : 'inactive',
-				token: '', // токен не хранится, так что пустой
+				token: bot.tokenMask || '',
 			})
 		}
 	}, [bot, reset])
 
 	const onSubmit = (data: UpdateBotDto) => {
-		onSave?.(data)
+		const updatedData = {
+			...data,
+			token: data.token === bot?.tokenMask ? '' : data.token,
+		}
+		onSave?.(updatedData)
 	}
 
 	const handleDeleteClick = () => {
@@ -144,7 +158,9 @@ export default function EditBotModal({ open, onClose, bot, onSave, onDelete, del
 										<Switch
 											{...field}
 											checked={field.value === 'active'}
-											onChange={(e) => field.onChange(e.target.checked ? 'active' : 'inactive')}
+											onChange={e =>
+												field.onChange(e.target.checked ? 'active' : 'inactive')
+											}
 										/>
 									}
 									label='Активен'
