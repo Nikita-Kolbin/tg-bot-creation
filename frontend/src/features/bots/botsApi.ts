@@ -100,8 +100,28 @@ export const botsApi = apiSlice.injectEndpoints({
 			}),
 			invalidatesTags: (result, error, { botId }) => [{ type: 'Products', id: botId }],
 		}),
+		updateProduct: build.mutation<Product, { botId: string; productId: string; data: { active: boolean; description: string; name: string; picture_urls: string[]; preview_url: string; price: number } }>({
+			query: ({ botId, productId, data }) => ({ url: `/api/bot/${botId}/product/${productId}`, method: 'PUT', body: data }),
+			transformResponse: (response: { id: number; bot_id: number; name: string; description: string; picture_urls: string[]; preview_url: string; price: number; active: boolean; created_at: string; updated_at: string }) => ({
+				id: response.id.toString(),
+				botId: response.bot_id.toString(),
+				name: response.name,
+				description: response.description,
+				pictureUrls: response.picture_urls,
+				previewUrl: response.preview_url,
+				price: response.price,
+				active: response.active,
+				createdAt: response.created_at,
+				updatedAt: response.updated_at,
+			}),
+			invalidatesTags: (result, error, { botId }) => [{ type: 'Products', id: botId }],
+		}),
+		deleteProduct: build.mutation<void, { botId: string; productId: string }>({
+			query: ({ botId, productId }) => ({ url: `/api/bot/${botId}/product/${productId}`, method: 'DELETE' }),
+			invalidatesTags: (result, error, { botId }) => [{ type: 'Products', id: botId }],
+		}),
 	}),
 	overrideExisting: false,
 })
 
-export const { useGetBotsQuery, useGetBotByIdQuery, useCreateBotMutation, useDeleteBotMutation, useUpdateBotMutation, useGetProductsQuery, useCreateProductMutation } = botsApi
+export const { useGetBotsQuery, useGetBotByIdQuery, useCreateBotMutation, useDeleteBotMutation, useUpdateBotMutation, useGetProductsQuery, useCreateProductMutation, useUpdateProductMutation, useDeleteProductMutation } = botsApi
