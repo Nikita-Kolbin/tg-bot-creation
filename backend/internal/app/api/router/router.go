@@ -65,6 +65,7 @@ func New(_ context.Context, srv service, address, serverHostPort string) http.Ha
 
 	router.Post("/api/bot/{bot_id}/product", authMiddleware(productAPI.CreateProduct))
 	router.Get("/api/bot/{bot_id}/products", authMiddleware(productAPI.GetProducts))
+	router.Get("/api/bot/{bot_id}/active_products", productAPI.GetActiveProducts)
 	router.Get("/api/bot/{bot_id}/product/{product_id}", authMiddleware(productAPI.GetProductByID))
 	router.Put("/api/bot/{bot_id}/product/{product_id}", authMiddleware(productAPI.UpdateProduct))
 	router.Delete("/api/bot/{bot_id}/product/{product_id}", authMiddleware(productAPI.DeleteProduct))
