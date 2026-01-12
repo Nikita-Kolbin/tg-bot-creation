@@ -237,6 +237,29 @@ export const botsApi = apiSlice.injectEndpoints({
 				{ type: 'Products', id: botId },
 			],
 		}),
+		getPublicProducts: build.query<Product[], string>({
+			queryFn: async (botId, _queryApi, _extraOptions, baseQuery) => {
+				const result = await fetch(
+					`${import.meta.env.VITE_API_BASE_URL || '/'}/api/bot/${botId}/active_products`
+				)
+				const data = await result.json()
+				return {
+					data: data.products.map((product: any) => ({
+						id: product.id.toString(),
+						botId: product.bot_id.toString(),
+						name: product.name,
+						description: product.description,
+						pictureUrls: product.picture_urls,
+						previewUrl: product.preview_url,
+						price: product.price,
+						active: product.active,
+						createdAt: product.created_at,
+						updatedAt: product.updated_at,
+					})),
+				}
+			},
+			providesTags: (result, error, botId) => [{ type: 'Products', id: botId }],
+		}),
 	}),
 	overrideExisting: false,
 })
@@ -251,4 +274,5 @@ export const {
 	useCreateProductMutation,
 	useUpdateProductMutation,
 	useDeleteProductMutation,
+	useGetPublicProductsQuery,
 } = botsApi

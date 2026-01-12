@@ -14,6 +14,6 @@ export const apiSlice = createApi({
 			return headers
 		},
 	}),
-	tagTypes: ['Bots'],
+	tagTypes: ['Bots', 'Products'],
 	endpoints: () => ({}),
 })
