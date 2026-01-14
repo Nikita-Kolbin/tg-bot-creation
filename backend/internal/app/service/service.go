@@ -33,6 +33,13 @@ type repository interface {
 	DeleteProduct(ctx context.Context, productID int) error
 	GetProductsByBot(ctx context.Context, botID int64, onlyActive bool) ([]*model.Product, error)
 	GetProductByID(ctx context.Context, productID int) (*model.Product, error)
+
+	UpsertCartItem(ctx context.Context, botID int64, username string, productID int, quantity int) error
+	GetCartItems(ctx context.Context, botID int64, username string) ([]*model.CartItem, error)
+
+	CreateOrderFromCart(ctx context.Context, botID int64, username string) ([]*model.OrderItemWithProduct, error)
+	GetUserOrders(ctx context.Context, botID int64, username string) ([]*model.OrderWithItems, error)
+	GetBotOrders(ctx context.Context, botID int64) ([]*model.OrderWithItems, error)
 }
 
 type tgClient interface {
