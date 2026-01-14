@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/api/bot"
+	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/api/cart"
+	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/api/order"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/api/product"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/api/user"
 	"net/http"
@@ -21,6 +23,8 @@ type service interface {
 	user.Service
 	bot.Service
 	product.Service
+	cart.Service
+	order.Service
 
 	GetJWTSecret() string
 }
@@ -50,6 +54,8 @@ func New(_ context.Context, srv service, address, serverHostPort string) http.Ha
 	userAPI := user.NewAPI(srv)
 	botAPI := bot.NewAPI(srv, serverHostPort)
 	productAPI := product.NewAPI(srv)
+	cartAPI := cart.NewAPI(srv)
+	orderAPI := order.NewAPI(srv)
 
 	// handlers
 	router.Post("/api/user/sign-up", userAPI.SignUp)
@@ -69,6 +75,13 @@ func New(_ context.Context, srv service, address, serverHostPort string) http.Ha
 	router.Get("/api/bot/{bot_id}/product/{product_id}", authMiddleware(productAPI.GetProductByID))
 	router.Put("/api/bot/{bot_id}/product/{product_id}", authMiddleware(productAPI.UpdateProduct))
 	router.Delete("/api/bot/{bot_id}/product/{product_id}", authMiddleware(productAPI.DeleteProduct))
+
+	router.Post("/api/bot/{bot_id}/product/{product_id}/cart", cartAPI.AddToCart)
+	router.Get("/api/bot/{bot_id}/cart", cartAPI.GetCart)
+
+	router.Post("/api/bot/{bot_id}/order", orderAPI.CreateOrder)
+	router.Get("/api/bot/{bot_id}/orders/user", orderAPI.GetUserOrders)
+	router.Get("/api/bot/{bot_id}/orders", authMiddleware(orderAPI.GetBotOrders))
 
 	return router
 }
