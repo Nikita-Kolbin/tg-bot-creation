@@ -28,7 +28,7 @@ export default function ConfirmDeleteModal({
 		<Dialog open={open} onClose={onClose} maxWidth={false} sx={{ width: 360, marginInline: "auto" }}>
 			<DialogTitle>Подтверждение удаления</DialogTitle>
 			<DialogContent>
-				<Typography>Вы уверены что хотите удалить бота?</Typography>
+				<Typography>Вы уверены что хотите удалить блок?</Typography>
 				{error && (
 					<Alert severity='error' sx={{ mt: 2 }}>
 						{error}

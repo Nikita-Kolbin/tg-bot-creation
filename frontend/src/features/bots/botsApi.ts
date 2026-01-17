@@ -1,5 +1,11 @@
 import { apiSlice } from '../../api/apiSlice'
-import type { Bot, CreateBotDto, UpdateBotDto, Product } from '../../types/bot'
+import type {
+	Bot,
+	CreateBotDto,
+	UpdateBotDto,
+	Product,
+	GetScenarioResponse,
+} from '../../types/bot'
 
 export const botsApi = apiSlice.injectEndpoints({
 	endpoints: build => ({
@@ -222,7 +228,7 @@ export const botsApi = apiSlice.injectEndpoints({
 				price: response.price,
 				active: response.active,
 				createdAt: response.created_at,
-				updatedAt: response.updated_at,
+				updatedAt: response.updatedAt,
 			}),
 			invalidatesTags: (result, error, { botId }) => [
 				{ type: 'Products', id: botId },
@@ -236,6 +242,13 @@ export const botsApi = apiSlice.injectEndpoints({
 			invalidatesTags: (result, error, { botId }) => [
 				{ type: 'Products', id: botId },
 			],
+		}),
+		setScenario: build.mutation<void, { botId: number; steps: any[] }>({
+			query: ({ botId, steps }) => ({
+				url: '/api/bot/scenario',
+				method: 'POST',
+				body: { bot_id: botId, steps },
+			}),
 		}),
 	}),
 	overrideExisting: false,
@@ -251,4 +264,6 @@ export const {
 	useCreateProductMutation,
 	useUpdateProductMutation,
 	useDeleteProductMutation,
+	useSetScenarioMutation,
+	useGetScenarioQuery,
 } = botsApi

@@ -34,3 +34,20 @@ export type Product = {
 	createdAt: string
 	updatedAt: string
 }
+
+export type ScenarioStep = {
+	number: number
+	text: string
+	coord_x: number
+	coord_y: number
+	buttons: ScenarioButton[]
+}
+
+export type ScenarioButton = {
+	text: string
+	next_step: number
+}
+
+export type GetScenarioResponse = {
+	steps: ScenarioStep[]
+}
