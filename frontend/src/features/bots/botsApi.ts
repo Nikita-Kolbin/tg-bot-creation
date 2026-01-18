@@ -8,7 +8,8 @@ import type {
 	Order,
 	CartItem,
 	Order,
-	OrderItem,
+	GetScenarioResponse,
+	ScenarioStep,
 } from '../../types/bot'
 
 export const botsApi = apiSlice.injectEndpoints({
@@ -249,6 +250,30 @@ export const botsApi = apiSlice.injectEndpoints({
 		}),
 		getBotOrders: build.query<Order[], string>({
 			query: botId => ({ url: `/api/bot/${botId}/orders`, method: 'GET' }),
+			transformResponse: (
+				response: {
+					orders: {
+						id: number
+						username: string
+						status: string
+						total_amount: number
+						created_at: string
+					}[]
+				},
+				meta,
+				arg,
+			) =>
+				response.orders.map(order => ({
+					id: order.id.toString(),
+					botId: arg,
+					username: order.username,
+					status: order.status,
+					totalAmount: order.total_amount,
+					createdAt: order.created_at,
+					items: [],
+				})),
+			providesTags: (result, error, botId) => [{ type: 'Orders', id: botId }],
+		}),
 			transformResponse: (response: {
 				orders: {
 					id: number
@@ -360,6 +385,28 @@ export const botsApi = apiSlice.injectEndpoints({
 			}) =>
 				response.orders.map(order => ({
 					id: order.id.toString(),
+					botId: order.bot_id.toString(),
+					username: order.username,
+					status: order.status,
+					totalAmount: order.total_amount,
+					items: order.items.map(item => ({
+						productId: item.product_id.toString(),
+						product: {
+							id: item.product.id.toString(),
+							botId: item.product.bot_id.toString(),
+							name: item.product.name,
+							description: item.product.description,
+							pictureUrls: item.product.picture_urls,
+							previewUrl: item.product.preview_url,
+							price: item.product.price,
+							active: item.product.active,
+							createdAt: item.product.created_at,
+							updatedAt: item.product.updated_at,
+						},
+						quantity: item.quantity,
+						price: item.price,
+					})),
+					createdAt: order.created_at,
 					username: order.username,
 					status: order.status,
 					total: order.total_amount,
@@ -444,6 +491,18 @@ export const botsApi = apiSlice.injectEndpoints({
 				updatedAt: response.updated_at,
 			}),
 		}),
+		setScenario: build.mutation<void, { botId: number; steps: ScenarioStep[] }>(
+			{
+				query: ({ botId, steps }) => ({
+					url: '/api/bot/scenario',
+					method: 'POST',
+					body: { bot_id: botId, steps },
+				}),
+			},
+		),
+		getScenario: build.query<GetScenarioResponse, number>({
+			query: botId => ({ url: `/api/bot/${botId}/scenario`, method: 'GET' }),
+		}),
 	}),
 	overrideExisting: false,
 })
@@ -458,10 +517,13 @@ export const {
 	useCreateProductMutation,
 	useUpdateProductMutation,
 	useDeleteProductMutation,
+	useGetBotOrdersQuery,
 	useGetPublicProductsQuery,
 	useGetProductByIdQuery,
 	useGetCartQuery,
 	useAddToCartMutation,
 	useGetUserOrdersQuery,
 	useCreateOrderMutation,
+	useSetScenarioMutation,
+	useGetScenarioQuery,
 } = botsApi

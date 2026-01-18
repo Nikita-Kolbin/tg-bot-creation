@@ -6,6 +6,7 @@ export type Bot = {
 	tokenMask: string | null
 	createdAt: string // ISO date
 	active: boolean
+	username: string
 	link?: string // ссылка для копирования
 }
 
@@ -13,6 +14,7 @@ export type CreateBotDto = {
 	name: string
 	description: string
 	token: string
+	username: string
 }
 
 export type UpdateBotDto = {
@@ -78,4 +80,21 @@ export type OrderItem = {
 	product: Product
 	quantity: number
 	price: number
+}
+
+export type ScenarioStep = {
+	number: number
+	text: string
+	coord_x: number
+	coord_y: number
+	buttons: ScenarioButton[]
+}
+
+export type ScenarioButton = {
+	text: string
+	next_step: number
+}
+
+export type GetScenarioResponse = {
+	steps: ScenarioStep[]
 }
