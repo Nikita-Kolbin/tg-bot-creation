@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
 	Card,
 	CardHeader,
@@ -15,6 +15,8 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import SettingsIcon from '@mui/icons-material/Settings'
 import EditIcon from '@mui/icons-material/Edit'
 import LaunchIcon from '@mui/icons-material/Launch'
+import AppsIcon from '@mui/icons-material/Apps'
+import AddMiniAppModal from './AddMiniAppModal'
 import type { Bot } from '../types/bot'
 
 type Props = {
@@ -25,15 +27,28 @@ type Props = {
 	statusError?: string | null
 }
 
-export default function BotCard({ bot, onEdit, onEditScenario, onStatusChange, statusError }: Props) {
+export default function BotCard({
+	bot,
+	onEdit,
+	onEditScenario,
+	onStatusChange,
+	statusError,
+}: Props) {
+	const [isAddMiniAppOpen, setIsAddMiniAppOpen] = useState(false)
+	const handleAddMiniApp = () => setIsAddMiniAppOpen(true)
+
+	const botUrl =
+		bot.username && bot.username.trim() !== ''
+			? `https://t.me/${bot.username}`
+			: ''
 	const copyLink = async () => {
-		try {
-			if (bot.link) {
-				await navigator.clipboard.writeText(bot.link)
+		if (botUrl) {
+			try {
+				await navigator.clipboard.writeText(botUrl)
 				alert('Ссылка скопирована')
+			} catch {
+				alert('Не удалось скопировать')
 			}
-		} catch {
-			alert('Не удалось скопировать')
 		}
 	}
 
@@ -41,7 +56,10 @@ export default function BotCard({ bot, onEdit, onEditScenario, onStatusChange, s
 		onStatusChange?.(bot, event.target.checked)
 	}
 
-	const truncatedDescription = bot.description ? bot.description.slice(0, 100) + (bot.description.length > 100 ? '...' : '') : ''
+	const truncatedDescription = bot.description
+		? bot.description.slice(0, 100) +
+			(bot.description.length > 100 ? '...' : '')
+		: ''
 
 	return (
 		<Card
@@ -69,6 +87,11 @@ export default function BotCard({ bot, onEdit, onEditScenario, onStatusChange, s
 				}
 				action={
 					<Box>
+						<Tooltip title='Добавить Miniapp'>
+							<IconButton onClick={handleAddMiniApp} size='small'>
+								<AppsIcon />
+							</IconButton>
+						</Tooltip>
 						<Tooltip title='Редактировать сценарий'>
 							<IconButton onClick={() => onEditScenario?.(bot)} size='small'>
 								<EditIcon />
@@ -96,7 +119,14 @@ export default function BotCard({ bot, onEdit, onEditScenario, onStatusChange, s
 						{statusError}
 					</Alert>
 				)}
-				<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+				<Box
+					sx={{
+						display: 'flex',
+						justifyContent: 'space-between',
+						alignItems: 'center',
+						mt: 1,
+					}}
+				>
 					<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
 						<Typography variant='body2' sx={{ fontWeight: 500 }}>
 							Статус:
@@ -121,12 +151,12 @@ export default function BotCard({ bot, onEdit, onEditScenario, onStatusChange, s
 							}}
 						/>
 					</Box>
-					<Box sx={{ display: 'flex', gap: 0.5 }}>
-						{bot.link && (
+					{bot.username && bot.username.trim() !== '' && (
+						<Box sx={{ display: 'flex', gap: 0.5 }}>
 							<Tooltip title='Открыть ссылку'>
 								<IconButton
 									size='small'
-									href={bot.link}
+									href={botUrl}
 									target='_blank'
 									rel='noreferrer'
 									aria-label='open'
@@ -135,19 +165,24 @@ export default function BotCard({ bot, onEdit, onEditScenario, onStatusChange, s
 									<LaunchIcon fontSize='small' />
 								</IconButton>
 							</Tooltip>
-						)}
-						<Tooltip title='Копировать ссылку'>
-							<IconButton
-								onClick={copyLink}
-								size='small'
-								sx={{ color: 'primary.main' }}
-							>
-								<ContentCopyIcon fontSize='small' />
-							</IconButton>
-						</Tooltip>
-					</Box>
+							<Tooltip title='Копировать ссылку'>
+								<IconButton
+									onClick={copyLink}
+									size='small'
+									sx={{ color: 'primary.main' }}
+								>
+									<ContentCopyIcon fontSize='small' />
+								</IconButton>
+							</Tooltip>
+						</Box>
+					)}
 				</Box>
 			</CardContent>
+			<AddMiniAppModal
+				open={isAddMiniAppOpen}
+				onClose={() => setIsAddMiniAppOpen(false)}
+				bot={bot}
+			/>
 		</Card>
 	)
 }

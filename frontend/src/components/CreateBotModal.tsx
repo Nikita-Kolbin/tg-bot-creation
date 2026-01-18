@@ -17,6 +17,13 @@ const schema = yup.object({
 	name: yup.string().required('Введите имя бота'),
 	description: yup.string().required('Введите описание'),
 	token: yup.string().required('Введите токен'),
+	username: yup
+		.string()
+		.required('Введите username')
+		.matches(
+			/^(.*)(bot|_bot)$/,
+			'Username должен оканчиваться на bot или _bot',
+		),
 })
 
 type Props = {
@@ -28,7 +35,7 @@ export default function CreateBotModal({ open, onClose }: Props) {
 	const [createBot, { isLoading }] = useCreateBotMutation()
 	const { control, handleSubmit, reset } = useForm<CreateBotDto>({
 		resolver: yupResolver(schema),
-		defaultValues: { name: '', description: '', token: '' },
+		defaultValues: { name: '', description: '', token: '', username: '' },
 	})
 
 	const onSubmit = async (data: CreateBotDto) => {
@@ -88,6 +95,23 @@ export default function CreateBotModal({ open, onClose }: Props) {
 								margin='normal'
 								error={!!fieldState.error}
 								helperText={fieldState.error?.message}
+							/>
+						)}
+					/>
+					<Controller
+						name='username'
+						control={control}
+						render={({ field, fieldState }) => (
+							<TextField
+								{...field}
+								label='Username бота'
+								fullWidth
+								margin='normal'
+								error={!!fieldState.error}
+								helperText={
+									fieldState.error?.message ||
+									'Username должен оканчиваться на bot или _bot'
+								}
 							/>
 						)}
 					/>

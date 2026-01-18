@@ -2,8 +2,11 @@ import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { PrivateRoute } from './routes/PrivateRoute'
 import Dashboard from './pages/Dashboard'
-<<<<<<< HEAD
-import BotEditScenario from './pages/BotEditScenario'
+
+import BotEditProducts from './pages/BotEditProducts'
+import ScenarioPage from './pages/ScenarioPage'
+
+import BotEditScenario from './pages/BotEditProducts'
 import MiniAppLayout from './pages/MiniAppLayout'
 import MiniAppCatalog from './pages/MiniAppCatalog'
 import Cart from './pages/Cart'
@@ -11,10 +14,6 @@ import Checkout from './pages/Checkout'
 import OrderSuccess from './pages/OrderSuccess'
 
 import Profile from './pages/Profile'
-=======
-import BotEditProducts from './pages/BotEditProducts'
-import ScenarioPage from './pages/ScenarioPage'
->>>>>>> feat-scenario-editor
 
 const App: React.FC = () => {
 	return (
