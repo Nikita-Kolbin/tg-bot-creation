@@ -48,6 +48,15 @@ export type ScenarioButton = {
 	next_step: number
 }
 
+export type Order = {
+	id: string
+	username: string
+	status: string
+	total: number
+	createdAt: string
+	items: Product[]
+}
+
 export type GetScenarioResponse = {
 	steps: ScenarioStep[]
 }

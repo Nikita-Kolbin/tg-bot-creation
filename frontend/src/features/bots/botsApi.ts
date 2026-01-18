@@ -5,6 +5,7 @@ import type {
 	UpdateBotDto,
 	Product,
 	GetScenarioResponse,
+	Order,
 } from '../../types/bot'
 
 export const botsApi = apiSlice.injectEndpoints({
@@ -228,7 +229,7 @@ export const botsApi = apiSlice.injectEndpoints({
 				price: response.price,
 				active: response.active,
 				createdAt: response.created_at,
-				updatedAt: response.updatedAt,
+				updatedAt: response.updated_at,
 			}),
 			invalidatesTags: (result, error, { botId }) => [
 				{ type: 'Products', id: botId },
@@ -242,6 +243,27 @@ export const botsApi = apiSlice.injectEndpoints({
 			invalidatesTags: (result, error, { botId }) => [
 				{ type: 'Products', id: botId },
 			],
+		}),
+		getBotOrders: build.query<Order[], string>({
+			query: botId => ({ url: `/api/bot/${botId}/orders`, method: 'GET' }),
+			transformResponse: (response: {
+				orders: {
+					id: number
+					username: string
+					status: string
+					total_amount: number
+					created_at: string
+				}[]
+			}) =>
+				response.orders.map(order => ({
+					id: order.id.toString(),
+					username: order.username,
+					status: order.status,
+					total: order.total_amount,
+					createdAt: order.created_at,
+					items: [],
+				})),
+			providesTags: (result, error, botId) => [{ type: 'Orders', id: botId }],
 		}),
 		setScenario: build.mutation<void, { botId: number; steps: any[] }>({
 			query: ({ botId, steps }) => ({
@@ -264,6 +286,8 @@ export const {
 	useCreateProductMutation,
 	useUpdateProductMutation,
 	useDeleteProductMutation,
+	useGetBotOrdersQuery,
 	useSetScenarioMutation,
 	useGetScenarioQuery,
+	useGetProductByIdQuery,
 } = botsApi
