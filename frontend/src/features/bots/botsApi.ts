@@ -4,9 +4,14 @@ import type {
 	CreateBotDto,
 	UpdateBotDto,
 	Product,
+<<<<<<< HEAD
 	CartItem,
 	Order,
 	OrderItem,
+=======
+	GetScenarioResponse,
+	Order,
+>>>>>>> feat-scenario-editor
 } from '../../types/bot'
 
 export const botsApi = apiSlice.injectEndpoints({
@@ -245,6 +250,7 @@ export const botsApi = apiSlice.injectEndpoints({
 				{ type: 'Products', id: botId },
 			],
 		}),
+<<<<<<< HEAD
 		getPublicProducts: build.query<Product[], string>({
 			query: botId => ({
 				url: `/api/bot/${botId}/active_products`,
@@ -345,10 +351,21 @@ export const botsApi = apiSlice.injectEndpoints({
 						quantity: number
 						price: number
 					}[]
+=======
+		getBotOrders: build.query<Order[], string>({
+			query: botId => ({ url: `/api/bot/${botId}/orders`, method: 'GET' }),
+			transformResponse: (response: {
+				orders: {
+					id: number
+					username: string
+					status: string
+					total_amount: number
+>>>>>>> feat-scenario-editor
 					created_at: string
 				}[]
 			}) =>
 				response.orders.map(order => ({
+<<<<<<< HEAD
 					id: order.id ? order.id.toString() : '',
 					botId: order.bot_id ? order.bot_id.toString() : '',
 					username: order.username ?? '',
@@ -418,6 +435,22 @@ export const botsApi = apiSlice.injectEndpoints({
 				active: response.active,
 				createdAt: response.created_at,
 				updatedAt: response.updated_at,
+=======
+					id: order.id.toString(),
+					username: order.username,
+					status: order.status,
+					total: order.total_amount,
+					createdAt: order.created_at,
+					items: [],
+				})),
+			providesTags: (result, error, botId) => [{ type: 'Orders', id: botId }],
+		}),
+		setScenario: build.mutation<void, { botId: number; steps: any[] }>({
+			query: ({ botId, steps }) => ({
+				url: '/api/bot/scenario',
+				method: 'POST',
+				body: { bot_id: botId, steps },
+>>>>>>> feat-scenario-editor
 			}),
 		}),
 	}),
@@ -434,10 +467,17 @@ export const {
 	useCreateProductMutation,
 	useUpdateProductMutation,
 	useDeleteProductMutation,
+<<<<<<< HEAD
 	useGetPublicProductsQuery,
 	useGetProductByIdQuery,
 	useGetCartQuery,
 	useAddToCartMutation,
 	useGetUserOrdersQuery,
 	useCreateOrderMutation,
+=======
+	useGetBotOrdersQuery,
+	useSetScenarioMutation,
+	useGetScenarioQuery,
+	useGetProductByIdQuery,
+>>>>>>> feat-scenario-editor
 } = botsApi
