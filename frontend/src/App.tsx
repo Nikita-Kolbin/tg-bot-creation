@@ -8,7 +8,7 @@ import MiniAppCatalog from './pages/MiniAppCatalog'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import OrderSuccess from './pages/OrderSuccess'
-import OrderDetail from './pages/OrderDetail'
+
 import Profile from './pages/Profile'
 
 const App: React.FC = () => {
@@ -45,7 +45,7 @@ const App: React.FC = () => {
 						<Route path='cart' element={<Cart />} />
 						<Route path='checkout' element={<Checkout />} />
 						<Route path='order-success' element={<OrderSuccess />} />
-						<Route path='order/:orderId' element={<OrderDetail />} />
+
 						<Route path='profile' element={<Profile />} />
 					</Route>
 				</Routes>
