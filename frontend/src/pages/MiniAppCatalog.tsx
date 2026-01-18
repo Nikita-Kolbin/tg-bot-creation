@@ -6,9 +6,11 @@ import { useGetPublicProductsQuery } from '../features/bots/botsApi'
 import ProductCard from '../components/ProductCard'
 import ProductDetailModal from '../components/ProductDetailModal'
 import type { Product } from '../types/bot'
+import { useMiniAppContext } from './MiniAppLayout'
 
 export default function MiniAppCatalog() {
-	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+	const { setShowAddToCart, setSelectedProduct, selectedProduct } =
+		useMiniAppContext()
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const { botId } = useParams<{ botId: string }>()
 
@@ -54,6 +56,7 @@ export default function MiniAppCatalog() {
 							product={product}
 							onClick={selected => {
 								setSelectedProduct(selected)
+								setShowAddToCart(true)
 								setIsModalOpen(true)
 							}}
 						/>
@@ -65,6 +68,7 @@ export default function MiniAppCatalog() {
 				onClose={() => {
 					setIsModalOpen(false)
 					setSelectedProduct(null)
+					setShowAddToCart(false)
 				}}
 				product={selectedProduct}
 			/>

@@ -80,7 +80,7 @@ export default function ProductDetailModal({ open, onClose, product }: Props) {
 	const hasMultipleImages = images.length > 1
 
 	return (
-		<Dialog open={open} onClose={onClose} maxWidth='sm' fullWidth>
+		<Dialog open={open} onClose={onClose} maxWidth='sm' fullWidth sx={{mb: '70px'}}>
 			<DialogContent sx={{ p: 0, position: 'relative' }}>
 				<IconButton
 					onClick={onClose}
