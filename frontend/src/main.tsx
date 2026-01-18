@@ -11,13 +11,12 @@ import { CssBaseline, ThemeProvider } from '@mui/material'
 
 import theme from './theme'
 
-
 const container = document.getElementById('root')!
 const root = createRoot(container)
 
 // mock switch
 //import { startMockServer } from './mocks'
- 
+
 //startMockServer()
 
 root.render(
