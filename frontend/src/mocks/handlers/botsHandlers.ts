@@ -8,6 +8,7 @@ const MOCK_BOTS: Bot[] = [
 		name: 'Demo Bot 1',
 		description: 'Demo description 1',
 		avatarUrl: null,
+		tokenMask: null,
 		createdAt: new Date().toISOString(),
 		active: true,
 		link: 'https://t.me/demo_bot_1',
@@ -17,6 +18,7 @@ const MOCK_BOTS: Bot[] = [
 		name: 'Demo Bot 2',
 		description: 'Demo description 2',
 		avatarUrl: null,
+		tokenMask: null,
 		createdAt: new Date().toISOString(),
 		active: false,
 		link: 'https://t.me/demo_bot_2',
@@ -50,6 +52,7 @@ export const botsHandlers = [
 			name: body.name,
 			description: body.description,
 			avatarUrl: null,
+			tokenMask: null,
 			createdAt: new Date().toISOString(),
 			active: true,
 			link: `https://t.me/${body.name.toLowerCase().replace(/\s+/g, '_')}_${Math.floor(Math.random() * 10000)}`,
@@ -60,7 +63,12 @@ export const botsHandlers = [
 
 	http.put('/api/bot/:id', async ({ params, request }) => {
 		const { id } = params
-		const body = (await request.json()) as { name: string; description: string; status: string; token: string }
+		const body = (await request.json()) as {
+			name: string
+			description: string
+			status: string
+			token: string
+		}
 		const index = MOCK_BOTS.findIndex(b => b.id === id)
 		if (index === -1) {
 			return HttpResponse.json({ message: 'Бот не найден' }, { status: 404 })

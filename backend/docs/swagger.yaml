@@ -1,5 +1,12 @@
 basePath: /api
 definitions:
+  dto.AddToCartRequest:
+    properties:
+      quantity:
+        type: integer
+      username:
+        type: string
+    type: object
   dto.BotCreateRequest:
     properties:
       description:
@@ -61,10 +68,84 @@ definitions:
       text:
         type: string
     type: object
+  dto.CartItemResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      product_description:
+        type: string
+      product_id:
+        type: integer
+      product_name:
+        type: string
+      product_preview_url:
+        type: string
+      product_price:
+        type: integer
+      quantity:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  dto.CartResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/dto.CartItemResponse'
+        type: array
+    type: object
+  dto.CreateOrderRequest:
+    properties:
+      username:
+        type: string
+    required:
+    - username
+    type: object
   dto.ErrorResponse:
     properties:
       error:
         type: string
+    type: object
+  dto.OrderItemResponse:
+    properties:
+      price_at_purchase:
+        type: integer
+      product_id:
+        type: integer
+      product_name:
+        type: string
+      quantity:
+        type: integer
+    type: object
+  dto.OrderResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      items:
+        items:
+          $ref: '#/definitions/dto.OrderItemResponse'
+        type: array
+      items_count:
+        type: integer
+      status:
+        type: string
+      total_amount:
+        type: integer
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  dto.OrdersResponse:
+    properties:
+      orders:
+        items:
+          $ref: '#/definitions/dto.OrderResponse'
+        type: array
     type: object
   dto.ProductCreateRequest:
     properties:
@@ -330,6 +411,140 @@ paths:
       summary: Get active products for bot
       tags:
       - product
+  /bot/{bot_id}/cart:
+    get:
+      parameters:
+      - description: Bot ID
+        in: path
+        name: bot_id
+        required: true
+        type: integer
+      - description: Username
+        in: query
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CartResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get user cart
+      tags:
+      - cart
+  /bot/{bot_id}/order:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bot ID
+        in: path
+        name: bot_id
+        required: true
+        type: integer
+      - description: create order request
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Create order from cart
+      tags:
+      - orders
+  /bot/{bot_id}/orders:
+    get:
+      parameters:
+      - description: Bot ID
+        in: path
+        name: bot_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.OrdersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all orders for bot (owner only)
+      tags:
+      - orders
+  /bot/{bot_id}/orders/user:
+    get:
+      parameters:
+      - description: Bot ID
+        in: path
+        name: bot_id
+        required: true
+        type: integer
+      - description: Username
+        in: query
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.OrdersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get user orders for bot
+      tags:
+      - orders
   /bot/{bot_id}/product:
     post:
       consumes:
@@ -513,6 +728,43 @@ paths:
       summary: Update product
       tags:
       - product
+  /bot/{bot_id}/product/{product_id}/cart:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bot ID
+        in: path
+        name: bot_id
+        required: true
+        type: integer
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: integer
+      - description: add to cart request
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddToCartRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Add product to cart
+      tags:
+      - cart
   /bot/{bot_id}/products:
     get:
       parameters:

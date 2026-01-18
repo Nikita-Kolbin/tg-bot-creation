@@ -46,6 +46,12 @@ export type ScenarioStep = {
 export type ScenarioButton = {
 	text: string
 	next_step: number
+export type CartItem = {
+	id: string
+	product_id: string
+	quantity: number
+	totalPrice?: number // опционально, рассчитывается как quantity * Product.price
+	userId?: string // опционально, если корзина привязана к пользователю
 }
 
 export type Order = {
@@ -59,4 +65,17 @@ export type Order = {
 
 export type GetScenarioResponse = {
 	steps: ScenarioStep[]
+	botId: string
+	username: string
+	status: string
+	totalAmount: number
+	items: OrderItem[]
+	createdAt: string
+}
+
+export type OrderItem = {
+	productId: string
+	product: Product
+	quantity: number
+	price: number
 }
