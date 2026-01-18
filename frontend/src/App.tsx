@@ -2,6 +2,8 @@ import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { PrivateRoute } from './routes/PrivateRoute'
 import Dashboard from './pages/Dashboard'
+import BotEditProducts from './pages/BotEditProducts'
+import ScenarioPage from './pages/ScenarioPage'
 import BotEditScenario from './pages/BotEditScenario'
 import MiniAppLayout from './pages/MiniAppLayout'
 import MiniAppCatalog from './pages/MiniAppCatalog'
@@ -28,7 +30,7 @@ const App: React.FC = () => {
 						path='/api/bot/edit/:id'
 						element={
 							<PrivateRoute>
-								<BotEditScenario />
+								<BotEditProducts />
 							</PrivateRoute>
 						}
 					/>
@@ -36,7 +38,7 @@ const App: React.FC = () => {
 						path='/api/bot/edit/:id/scenario'
 						element={
 							<PrivateRoute>
-								<div>Редактирование сценария (заглушка)</div>
+								<ScenarioPage />
 							</PrivateRoute>
 						}
 					/>

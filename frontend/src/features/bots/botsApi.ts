@@ -4,6 +4,8 @@ import type {
 	CreateBotDto,
 	UpdateBotDto,
 	Product,
+	GetScenarioResponse,
+	Order,
 	CartItem,
 	Order,
 	OrderItem,
@@ -245,6 +247,14 @@ export const botsApi = apiSlice.injectEndpoints({
 				{ type: 'Products', id: botId },
 			],
 		}),
+		getBotOrders: build.query<Order[], string>({
+			query: botId => ({ url: `/api/bot/${botId}/orders`, method: 'GET' }),
+			transformResponse: (response: {
+				orders: {
+					id: number
+					username: string
+					status: string
+					total_amount: number
 		getPublicProducts: build.query<Product[], string>({
 			query: botId => ({
 				url: `/api/bot/${botId}/active_products`,
@@ -349,6 +359,20 @@ export const botsApi = apiSlice.injectEndpoints({
 				}[]
 			}) =>
 				response.orders.map(order => ({
+					id: order.id.toString(),
+					username: order.username,
+					status: order.status,
+					total: order.total_amount,
+					createdAt: order.created_at,
+					items: [],
+				})),
+			providesTags: (result, error, botId) => [{ type: 'Orders', id: botId }],
+		}),
+		setScenario: build.mutation<void, { botId: number; steps: any[] }>({
+			query: ({ botId, steps }) => ({
+				url: '/api/bot/scenario',
+				method: 'POST',
+				body: { bot_id: botId, steps },
 					id: order.id ? order.id.toString() : '',
 					botId: order.bot_id ? order.bot_id.toString() : '',
 					username: order.username ?? '',
