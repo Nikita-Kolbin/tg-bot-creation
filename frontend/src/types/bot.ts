@@ -37,6 +37,17 @@ export type Product = {
 	updatedAt: string
 }
 
+export type ScenarioStep = {
+	number: number
+	text: string
+	coord_x: number
+	coord_y: number
+	buttons: ScenarioButton[]
+}
+
+export type ScenarioButton = {
+	text: string
+	next_step: number
 export type CartItem = {
 	id: string
 	product_id: string
@@ -47,6 +58,15 @@ export type CartItem = {
 
 export type Order = {
 	id: string
+	username: string
+	status: string
+	total: number
+	createdAt: string
+	items: Product[]
+}
+
+export type GetScenarioResponse = {
+	steps: ScenarioStep[]
 	botId: string
 	username: string
 	status: string

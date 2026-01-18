@@ -78,6 +78,10 @@ export default function BotEditScenario() {
 			(sum, o) => sum + (Number(o.totalAmount) || 0),
 			0,
 		)
+		const allTotal = orders.reduce((sum, o) => sum + o.total, 0)
+		const dayTotal = dayOrders.reduce((sum, o) => sum + o.total, 0)
+		const weekTotal = weekOrders.reduce((sum, o) => sum + o.total, 0)
+		const monthTotal = monthOrders.reduce((sum, o) => sum + o.total, 0)
 
 		return {
 			allOrders: allOrders.length,

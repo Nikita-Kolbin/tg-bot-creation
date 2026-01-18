@@ -4,6 +4,8 @@ import type {
 	CreateBotDto,
 	UpdateBotDto,
 	Product,
+	GetScenarioResponse,
+	Order,
 	CartItem,
 	Order,
 	GetScenarioResponse,
@@ -272,6 +274,12 @@ export const botsApi = apiSlice.injectEndpoints({
 				})),
 			providesTags: (result, error, botId) => [{ type: 'Orders', id: botId }],
 		}),
+			transformResponse: (response: {
+				orders: {
+					id: number
+					username: string
+					status: string
+					total_amount: number
 		getPublicProducts: build.query<Product[], string>({
 			query: botId => ({
 				url: `/api/bot/${botId}/active_products`,
@@ -399,6 +407,45 @@ export const botsApi = apiSlice.injectEndpoints({
 						price: item.price,
 					})),
 					createdAt: order.created_at,
+					username: order.username,
+					status: order.status,
+					total: order.total_amount,
+					createdAt: order.created_at,
+					items: [],
+				})),
+			providesTags: (result, error, botId) => [{ type: 'Orders', id: botId }],
+		}),
+		setScenario: build.mutation<void, { botId: number; steps: any[] }>({
+			query: ({ botId, steps }) => ({
+				url: '/api/bot/scenario',
+				method: 'POST',
+				body: { bot_id: botId, steps },
+					id: order.id ? order.id.toString() : '',
+					botId: order.bot_id ? order.bot_id.toString() : '',
+					username: order.username ?? '',
+					status: order.status ?? '',
+					totalAmount: order.total_amount ?? 0,
+					items:
+						order.items?.map(item => ({
+							productId: item.product_id ? item.product_id.toString() : '',
+							product: {
+								id: item.product?.id ? item.product.id.toString() : '',
+								botId: item.product?.bot_id
+									? item.product.bot_id.toString()
+									: '',
+								name: item.product?.name ?? '',
+								description: item.product?.description ?? '',
+								pictureUrls: item.product?.picture_urls ?? [],
+								previewUrl: item.product?.preview_url ?? '',
+								price: item.product?.price ?? 0,
+								active: item.product?.active ?? false,
+								createdAt: item.product?.created_at ?? '',
+								updatedAt: item.product?.updated_at ?? '',
+							},
+							quantity: item.quantity ?? 0,
+							price: item.price ?? 0,
+						})) ?? [],
+					createdAt: order.created_at ?? '',
 				})),
 			providesTags: (result, error, { botId, username }) => [
 				{ type: 'Orders', id: `${botId}-${username}` },

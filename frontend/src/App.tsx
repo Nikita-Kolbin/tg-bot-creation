@@ -2,11 +2,9 @@ import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { PrivateRoute } from './routes/PrivateRoute'
 import Dashboard from './pages/Dashboard'
-
 import BotEditProducts from './pages/BotEditProducts'
 import ScenarioPage from './pages/ScenarioPage'
-
-import BotEditScenario from './pages/BotEditProducts'
+import BotEditScenario from './pages/BotEditScenario'
 import MiniAppLayout from './pages/MiniAppLayout'
 import MiniAppCatalog from './pages/MiniAppCatalog'
 import Cart from './pages/Cart'
