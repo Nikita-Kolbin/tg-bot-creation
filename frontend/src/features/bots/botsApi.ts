@@ -4,14 +4,11 @@ import type {
 	CreateBotDto,
 	UpdateBotDto,
 	Product,
-<<<<<<< HEAD
 	CartItem,
 	Order,
 	OrderItem,
-=======
 	GetScenarioResponse,
-	Order,
->>>>>>> feat-scenario-editor
+	ScenarioStep,
 } from '../../types/bot'
 
 export const botsApi = apiSlice.injectEndpoints({
@@ -250,7 +247,6 @@ export const botsApi = apiSlice.injectEndpoints({
 				{ type: 'Products', id: botId },
 			],
 		}),
-<<<<<<< HEAD
 		getPublicProducts: build.query<Product[], string>({
 			query: botId => ({
 				url: `/api/bot/${botId}/active_products`,
@@ -351,47 +347,33 @@ export const botsApi = apiSlice.injectEndpoints({
 						quantity: number
 						price: number
 					}[]
-=======
-		getBotOrders: build.query<Order[], string>({
-			query: botId => ({ url: `/api/bot/${botId}/orders`, method: 'GET' }),
-			transformResponse: (response: {
-				orders: {
-					id: number
-					username: string
-					status: string
-					total_amount: number
->>>>>>> feat-scenario-editor
 					created_at: string
 				}[]
 			}) =>
 				response.orders.map(order => ({
-<<<<<<< HEAD
-					id: order.id ? order.id.toString() : '',
-					botId: order.bot_id ? order.bot_id.toString() : '',
-					username: order.username ?? '',
-					status: order.status ?? '',
-					totalAmount: order.total_amount ?? 0,
-					items:
-						order.items?.map(item => ({
-							productId: item.product_id ? item.product_id.toString() : '',
-							product: {
-								id: item.product?.id ? item.product.id.toString() : '',
-								botId: item.product?.bot_id
-									? item.product.bot_id.toString()
-									: '',
-								name: item.product?.name ?? '',
-								description: item.product?.description ?? '',
-								pictureUrls: item.product?.picture_urls ?? [],
-								previewUrl: item.product?.preview_url ?? '',
-								price: item.product?.price ?? 0,
-								active: item.product?.active ?? false,
-								createdAt: item.product?.created_at ?? '',
-								updatedAt: item.product?.updated_at ?? '',
-							},
-							quantity: item.quantity ?? 0,
-							price: item.price ?? 0,
-						})) ?? [],
-					createdAt: order.created_at ?? '',
+					id: order.id.toString(),
+					botId: order.bot_id.toString(),
+					username: order.username,
+					status: order.status,
+					totalAmount: order.total_amount,
+					items: order.items.map(item => ({
+						productId: item.product_id.toString(),
+						product: {
+							id: item.product.id.toString(),
+							botId: item.product.bot_id.toString(),
+							name: item.product.name,
+							description: item.product.description,
+							pictureUrls: item.product.picture_urls,
+							previewUrl: item.product.preview_url,
+							price: item.product.price,
+							active: item.product.active,
+							createdAt: item.product.created_at,
+							updatedAt: item.product.updated_at,
+						},
+						quantity: item.quantity,
+						price: item.price,
+					})),
+					createdAt: order.created_at,
 				})),
 			providesTags: (result, error, { botId, username }) => [
 				{ type: 'Orders', id: `${botId}-${username}` },
@@ -407,6 +389,41 @@ export const botsApi = apiSlice.injectEndpoints({
 				{ type: 'Cart', id: `${botId}-${username}` },
 				{ type: 'Orders', id: `${botId}-${username}` },
 			],
+		}),
+		getBotOrders: build.query<Order[], string>({
+			query: botId => ({ url: `/api/bot/${botId}/orders`, method: 'GET' }),
+			transformResponse: (response: {
+				orders: {
+					id: number
+					username: string
+					status: string
+					total_amount: number
+					created_at: string
+				}[]
+			}) =>
+				response.orders.map(order => ({
+					id: order.id.toString(),
+					botId: '', // assuming not provided, set to empty
+					username: order.username,
+					status: order.status,
+					totalAmount: order.total_amount,
+					items: [],
+					createdAt: order.created_at,
+				})),
+			providesTags: (result, error, botId) => [{ type: 'Orders', id: botId }],
+		}),
+		setScenario: build.mutation<void, { botId: number; steps: ScenarioStep[] }>(
+			{
+				query: ({ botId, steps }) => ({
+					url: '/api/bot/scenario',
+					method: 'POST',
+					body: { bot_id: botId, steps },
+				}),
+			},
+		),
+		getScenario: build.query<GetScenarioResponse, string>({
+			query: botId => ({ url: `/api/bot/${botId}/scenario`, method: 'GET' }),
+			transformResponse: (response: GetScenarioResponse) => response,
 		}),
 		getProductById: build.query<Product, { botId: string; productId: string }>({
 			query: ({ botId, productId }) => ({
@@ -435,22 +452,6 @@ export const botsApi = apiSlice.injectEndpoints({
 				active: response.active,
 				createdAt: response.created_at,
 				updatedAt: response.updated_at,
-=======
-					id: order.id.toString(),
-					username: order.username,
-					status: order.status,
-					total: order.total_amount,
-					createdAt: order.created_at,
-					items: [],
-				})),
-			providesTags: (result, error, botId) => [{ type: 'Orders', id: botId }],
-		}),
-		setScenario: build.mutation<void, { botId: number; steps: any[] }>({
-			query: ({ botId, steps }) => ({
-				url: '/api/bot/scenario',
-				method: 'POST',
-				body: { bot_id: botId, steps },
->>>>>>> feat-scenario-editor
 			}),
 		}),
 	}),
@@ -467,17 +468,13 @@ export const {
 	useCreateProductMutation,
 	useUpdateProductMutation,
 	useDeleteProductMutation,
-<<<<<<< HEAD
 	useGetPublicProductsQuery,
 	useGetProductByIdQuery,
 	useGetCartQuery,
 	useAddToCartMutation,
 	useGetUserOrdersQuery,
 	useCreateOrderMutation,
-=======
 	useGetBotOrdersQuery,
 	useSetScenarioMutation,
 	useGetScenarioQuery,
-	useGetProductByIdQuery,
->>>>>>> feat-scenario-editor
 } = botsApi

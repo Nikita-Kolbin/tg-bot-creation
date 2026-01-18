@@ -7,6 +7,7 @@ export type Bot = {
 	createdAt: string // ISO date
 	active: boolean
 	link?: string // ссылка для копирования
+	username?: string
 }
 
 export type CreateBotDto = {
@@ -35,31 +36,16 @@ export type Product = {
 	updatedAt: string
 }
 
-<<<<<<< HEAD
 export type CartItem = {
 	id: string
 	product_id: string
 	quantity: number
 	totalPrice?: number // опционально, рассчитывается как quantity * Product.price
 	userId?: string // опционально, если корзина привязана к пользователю
-=======
-export type ScenarioStep = {
-	number: number
-	text: string
-	coord_x: number
-	coord_y: number
-	buttons: ScenarioButton[]
-}
-
-export type ScenarioButton = {
-	text: string
-	next_step: number
->>>>>>> feat-scenario-editor
 }
 
 export type Order = {
 	id: string
-<<<<<<< HEAD
 	botId: string
 	username: string
 	status: string
@@ -73,15 +59,21 @@ export type OrderItem = {
 	product: Product
 	quantity: number
 	price: number
-=======
-	username: string
-	status: string
-	total: number
-	createdAt: string
-	items: Product[]
+}
+
+export type ScenarioStep = {
+	number: number
+	text: string
+	coord_x: number
+	coord_y: number
+	buttons: ScenarioButton[]
+}
+
+export type ScenarioButton = {
+	text: string
+	next_step: number
 }
 
 export type GetScenarioResponse = {
 	steps: ScenarioStep[]
->>>>>>> feat-scenario-editor
 }

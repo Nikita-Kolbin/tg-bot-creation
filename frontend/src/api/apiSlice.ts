@@ -14,10 +14,6 @@ export const apiSlice = createApi({
 			return headers
 		},
 	}),
-<<<<<<< HEAD
 	tagTypes: ['Bots', 'Products', 'Cart', 'Orders'],
-=======
-	tagTypes: ['Bots', 'Products', 'Orders'],
->>>>>>> feat-scenario-editor
 	endpoints: () => ({}),
 })
