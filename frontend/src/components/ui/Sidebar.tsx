@@ -55,13 +55,6 @@ export default function Sidebar() {
 					<ListItemText primary='Домой' />
 				</ListItemButton>
 
-				<ListItemButton onClick={() => navigate('/account')}>
-					<ListItemIcon>
-						<SettingsIcon />
-					</ListItemIcon>
-					<ListItemText primary='Настройки аккаунта' />
-				</ListItemButton>
-
 				<ListItemButton
 					onClick={() => {
 						dispatch(logout())

@@ -454,6 +454,18 @@ export const botsApi = apiSlice.injectEndpoints({
 				updatedAt: response.updated_at,
 			}),
 		}),
+		setScenario: build.mutation<void, { botId: number; steps: ScenarioStep[] }>(
+			{
+				query: ({ botId, steps }) => ({
+					url: '/api/bot/scenario',
+					method: 'POST',
+					body: { bot_id: botId, steps },
+				}),
+			},
+		),
+		getScenario: build.query<GetScenarioResponse, number>({
+			query: botId => ({ url: `/api/bot/${botId}/scenario`, method: 'GET' }),
+		}),
 	}),
 	overrideExisting: false,
 })

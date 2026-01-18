@@ -6,6 +6,7 @@ export type Bot = {
 	tokenMask: string | null
 	createdAt: string // ISO date
 	active: boolean
+	username: string
 	link?: string // ссылка для копирования
 	username?: string
 }
@@ -14,6 +15,7 @@ export type CreateBotDto = {
 	name: string
 	description: string
 	token: string
+	username: string
 }
 
 export type UpdateBotDto = {

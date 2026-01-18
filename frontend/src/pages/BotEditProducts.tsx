@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Sidebar from '../components/ui/Sidebar'
 import {
@@ -37,6 +37,7 @@ export default function BotEditScenario() {
 	const { id } = useParams<{ id: string }>()
 	const navigate = useNavigate()
 	const { data: bot, isLoading, isError } = useGetBotByIdQuery(id!)
+	const botUrl = bot ? 'https://t.me/' : ''
 	const [updateBot, { isLoading: isUpdating }] = useUpdateBotMutation()
 	const [activeTab, setActiveTab] = useState(0)
 	const [search, setSearch] = useState('')
@@ -61,6 +62,22 @@ export default function BotEditScenario() {
 
 		const uniqueCustomers = new Set(orders.map(o => o.username)).size
 
+		const allTotal = orders.reduce(
+			(sum, o) => sum + (Number(o.totalAmount) || 0),
+			0,
+		)
+		const dayTotal = dayOrders.reduce(
+			(sum, o) => sum + (Number(o.totalAmount) || 0),
+			0,
+		)
+		const weekTotal = weekOrders.reduce(
+			(sum, o) => sum + (Number(o.totalAmount) || 0),
+			0,
+		)
+		const monthTotal = monthOrders.reduce(
+			(sum, o) => sum + (Number(o.totalAmount) || 0),
+			0,
+		)
 		const allTotal = orders.reduce((sum, o) => sum + o.total, 0)
 		const dayTotal = dayOrders.reduce((sum, o) => sum + o.total, 0)
 		const weekTotal = weekOrders.reduce((sum, o) => sum + o.total, 0)
@@ -79,18 +96,12 @@ export default function BotEditScenario() {
 		}
 	}, [orders])
 
-	const tabs = [
-		'Товары',
-		'Категории',
-		'История заказов',
-		'Аналитика',
-		'Импорт товаров',
-	]
+	const tabs = ['Товары', 'История заказов', 'Аналитика']
 
 	const copyLink = async () => {
 		if (bot?.link) {
 			try {
-				await navigator.clipboard.writeText(bot.link)
+				await navigator.clipboard.writeText(botUrl)
 				alert('Ссылка скопирована')
 			} catch {
 				alert('Не удалось скопировать')
@@ -253,7 +264,7 @@ export default function BotEditScenario() {
 						</Table>
 					</Box>
 				)
-			case 2: // История заказов
+			case 1: // История заказов
 				return (
 					<Table sx={{ borderRadius: 2, overflow: 'hidden', boxShadow: 2 }}>
 						<TableHead sx={{ backgroundColor: 'primary.main' }}>
@@ -301,7 +312,7 @@ export default function BotEditScenario() {
 									<TableCell>{order.id}</TableCell>
 									<TableCell>{order.username}</TableCell>
 									<TableCell>{order.status}</TableCell>
-									<TableCell>{order.total} ₽</TableCell>
+									<TableCell>{order.totalAmount} ₽</TableCell>
 									<TableCell>
 										{new Date(order.createdAt).toLocaleString()}
 									</TableCell>
@@ -310,7 +321,7 @@ export default function BotEditScenario() {
 						</TableBody>
 					</Table>
 				)
-			case 3: // Аналитика
+			case 2: // Аналитика
 				return (
 					<Grid container spacing={2}>
 						<Grid item xs={12} sm={6} md={3}>
@@ -415,7 +426,7 @@ export default function BotEditScenario() {
 									<Typography variant='h6' color='text.secondary'>
 										Количество покупателей
 									</Typography>
-									<Typography variant='h4' color='secondary.main'>
+									<Typography variant='h4' color='success.main'>
 										{analytics.uniqueCustomers}
 									</Typography>
 								</CardContent>
@@ -503,12 +514,12 @@ export default function BotEditScenario() {
 								</Button>
 								<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
 									<a
-										href={bot.link}
+										href={botUrl}
 										target='_blank'
 										rel='noreferrer'
 										style={{ color: 'inherit', textDecoration: 'none' }}
 									>
-										{bot.link}
+										{botUrl}
 									</a>
 									<IconButton onClick={copyLink}>
 										<ContentCopyIcon />
@@ -562,3 +573,7 @@ export default function BotEditScenario() {
 		</Box>
 	)
 }
+
+
+
+
