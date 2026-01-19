@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/api/bot"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/api/cart"
+	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/api/common"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/api/order"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/api/product"
 	"github.com/Nikita-Kolbin/tg-bot-creation/backend/internal/app/api/user"
@@ -58,6 +59,8 @@ func New(_ context.Context, srv service, address, serverHostPort string) http.Ha
 	orderAPI := order.NewAPI(srv)
 
 	// handlers
+	router.Get("/health", common.HealthCheck)
+
 	router.Post("/api/user/sign-up", userAPI.SignUp)
 	router.Post("/api/user/sign-in", userAPI.SignIn)
 
