@@ -19,6 +19,9 @@ compose_migrate:
 compose_backend:
 	docker compose --env-file ./backend/env/.env -p tg-bot-creation up -d backend --build --force-recreate
 
+# Перебилдить фронт
+compose_frontend:
+	docker compose -p tg-bot-creation up -d frontend --build --force-recreate
 
 
 # Создание миграции
