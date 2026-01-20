@@ -4,7 +4,7 @@ const theme = createTheme({
 	palette: {
 		mode: 'light',
 		primary: { main: '#0088CC' }, // Telegram blue
-		secondary: { main: '#ffffff' },
+		secondary: { main: '#9932CC' },
 		background: {
 			default: '#ffffff',
 			paper: '#f5f5f5',
@@ -12,7 +12,7 @@ const theme = createTheme({
 	},
 	typography: {
 		fontFamily: ['Inter', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'].join(
-			','
+			',',
 		),
 		h4: {
 			fontSize: '1.5rem',

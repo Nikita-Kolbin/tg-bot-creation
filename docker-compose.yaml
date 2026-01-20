@@ -1,5 +1,4 @@
 services:
-
   backend:
     build: ./backend
     env_file: ./backend/env/.env
@@ -10,18 +9,18 @@ services:
     depends_on:
       postgresql:
         condition: service_healthy
-#      redis:
-#        condition: service_healthy
+  #      redis:
+  #        condition: service_healthy
 
-#  frontend:
-#    build: ./frontend
-#    ports:
-#      - 5173:5173
-#    networks:
-#      - tg_bot_creator_nw
-#    command: ["npm", "run", "dev"]
-#    depends_on:
-#     - backend
+  frontend:
+    build: ./frontend
+    env_file: ./frontend/.env
+    ports:
+      - 80:80
+    networks:
+      - tg_bot_creator_nw
+    depends_on:
+      - backend
 
   postgresql:
     image: postgres:16
@@ -45,7 +44,14 @@ services:
       - ./backend/migrations:/database
     networks:
       - tg_bot_creator_nw
-    command: [ "-path", "/database", "-database",  "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_DB_NAME}?sslmode=disable", "up" ]
+    command:
+      [
+        '-path',
+        '/database',
+        '-database',
+        'postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_DB_NAME}?sslmode=disable',
+        'up',
+      ]
     depends_on:
       postgresql:
         condition: service_healthy

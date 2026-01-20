@@ -1,4 +1,3 @@
-import React from 'react'
 import {
 	Dialog,
 	DialogTitle,
@@ -11,8 +10,7 @@ import {
 	TableBody,
 	Chip,
 } from '@mui/material'
-import { useGetProductByIdQuery } from '../features/bots/botsApi'
-import type { Order, Product } from '../types/bot'
+import type { Order } from '../types/bot'
 
 type Props = {
 	open: boolean
@@ -24,7 +22,6 @@ export default function OrderDetailModal({
 	open,
 	onClose,
 	order,
-	botId,
 }: Props) {
 	if (!order) return null
 
@@ -49,7 +46,7 @@ export default function OrderDetailModal({
 					/>
 				</Typography>
 				<Typography>
-					<strong>Итого:</strong> {order.total} ₽
+					<strong>Итого:</strong> {order.totalAmount} ₽
 				</Typography>
 				<Typography>
 					<strong>Создан:</strong> {new Date(order.createdAt).toLocaleString()}
@@ -62,15 +59,13 @@ export default function OrderDetailModal({
 					<TableHead>
 						<TableRow>
 							<TableCell>Название</TableCell>
-							<TableCell>Описание</TableCell>
 							<TableCell>Цена</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
 						{order.items.map(item => (
-							<TableRow key={item.id}>
-								<TableCell>{item.name}</TableCell>
-								<TableCell>{item.description}</TableCell>
+							<TableRow key={item.productId}>
+								<TableCell>{item.product.name}</TableCell>
 								<TableCell>{item.price} ₽</TableCell>
 							</TableRow>
 						))}

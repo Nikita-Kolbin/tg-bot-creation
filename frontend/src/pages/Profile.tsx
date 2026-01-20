@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import {
 	Box,
 	Typography,
@@ -133,7 +133,8 @@ export default function Profile() {
 					</DialogTitle>
 					<DialogContent>
 						<Typography variant='body1' sx={{ mb: 1 }}>
-							Дата и время: {new Date(selectedOrder.createdAt).toLocaleString()}
+							Дата и время:{' '}
+							{new Date(selectedOrder.createdAt).toLocaleString()}
 						</Typography>
 						<Typography variant='body1' sx={{ mb: 1 }}>
 							Статус:{' '}

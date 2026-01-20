@@ -1,4 +1,4 @@
-import React from 'react'
+
 import Sidebar from '../components/ui/Sidebar'
 import { Box, Container, Typography, CircularProgress } from '@mui/material'
 import { useGetBotsQuery } from '../features/bots/botsApi'

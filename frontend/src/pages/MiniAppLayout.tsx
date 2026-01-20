@@ -4,7 +4,6 @@ import BottomNavbar from '../components/BottomNavbar'
 import {
 	useAddToCartMutation,
 	useGetCartQuery,
-	useGetPublicProductsQuery,
 } from '../features/bots/botsApi'
 import { getTelegramUsername } from '../utils/telegramUtils'
 import type { Product, CartItem } from '../types/bot'

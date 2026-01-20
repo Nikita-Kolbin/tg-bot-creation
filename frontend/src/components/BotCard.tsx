@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
 	Card,
 	CardHeader,
@@ -15,8 +15,6 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import SettingsIcon from '@mui/icons-material/Settings'
 import EditIcon from '@mui/icons-material/Edit'
 import LaunchIcon from '@mui/icons-material/Launch'
-import AppsIcon from '@mui/icons-material/Apps'
-import AddMiniAppModal from './AddMiniAppModal'
 import type { Bot } from '../types/bot'
 
 type Props = {
@@ -34,8 +32,7 @@ export default function BotCard({
 	onStatusChange,
 	statusError,
 }: Props) {
-	const [isAddMiniAppOpen, setIsAddMiniAppOpen] = useState(false)
-	const handleAddMiniApp = () => setIsAddMiniAppOpen(true)
+	
 
 	const botUrl =
 		bot.username && bot.username.trim() !== ''
@@ -87,12 +84,7 @@ export default function BotCard({
 				}
 				action={
 					<Box>
-						<Tooltip title='Добавить Miniapp'>
-							<IconButton onClick={handleAddMiniApp} size='small'>
-								<AppsIcon />
-							</IconButton>
-						</Tooltip>
-						<Tooltip title='Редактировать сценарий'>
+						<Tooltip title='Редактировать бота'>
 							<IconButton onClick={() => onEditScenario?.(bot)} size='small'>
 								<EditIcon />
 							</IconButton>
@@ -178,11 +170,7 @@ export default function BotCard({
 					)}
 				</Box>
 			</CardContent>
-			<AddMiniAppModal
-				open={isAddMiniAppOpen}
-				onClose={() => setIsAddMiniAppOpen(false)}
-				bot={bot}
-			/>
+			
 		</Card>
 	)
 }

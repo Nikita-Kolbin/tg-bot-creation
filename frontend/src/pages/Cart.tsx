@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { Box, Typography, Button } from '@mui/material'
 import { useMiniAppContext } from './MiniAppLayout'
 import { useGetPublicProductsQuery } from '../features/bots/botsApi'

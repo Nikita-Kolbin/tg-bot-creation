@@ -1,4 +1,4 @@
-import React from 'react'
+import { useEffect } from 'react'
 import {
 	Drawer,
 	List,
@@ -9,8 +9,7 @@ import {
 	Box,
 	Typography,
 } from '@mui/material'
-import HomeIcon from '@mui/icons-material/Home'
-import SettingsIcon from '@mui/icons-material/Settings'
+import SmartToyIcon from '@mui/icons-material/SmartToy'
 import LogoutIcon from '@mui/icons-material/Logout'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { logout } from '../../features/auth/authSlice'
@@ -22,6 +21,13 @@ export default function Sidebar() {
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
 	const user = useAppSelector(s => s.auth.user)
+	const token = useAppSelector(s => s.auth.token)
+
+	useEffect(() => {
+		if (!token) {
+			navigate('/signin')
+		}
+	}, [token, navigate])
 
 	return (
 		<Drawer
@@ -38,21 +44,18 @@ export default function Sidebar() {
 			}}
 		>
 			<Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-				<Avatar>{user?.name?.[0]?.toUpperCase() ?? 'U'}</Avatar>
+				<Avatar>{user?.email?.[0]?.toUpperCase() ?? 'U'}</Avatar>
 				<Box>
-					<Typography variant='subtitle1'>{user?.name ?? 'User'}</Typography>
-					<Typography variant='caption' color='text.secondary'>
-						{user?.email ?? ''}
-					</Typography>
+					<Typography variant='subtitle1'>{user?.email ?? 'User'}</Typography>
 				</Box>
 			</Box>
 
 			<List>
 				<ListItemButton onClick={() => navigate('/')}>
 					<ListItemIcon>
-						<HomeIcon />
+						<SmartToyIcon />
 					</ListItemIcon>
-					<ListItemText primary='Домой' />
+					<ListItemText primary='Список ботов' />
 				</ListItemButton>
 
 				<ListItemButton
