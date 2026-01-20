@@ -1,12 +1,12 @@
-import React, { useState } from 'react'
+
 import { useParams } from 'react-router-dom'
 import { Container, Typography, CircularProgress } from '@mui/material'
 import { Grid } from '@mui/material'
 import { useGetPublicProductsQuery } from '../features/bots/botsApi'
 import ProductCard from '../components/ProductCard'
 import ProductDetailModal from '../components/ProductDetailModal'
-import type { Product } from '../types/bot'
 import { useMiniAppContext } from './MiniAppLayout'
+import { useState } from 'react'
 
 export default function MiniAppCatalog() {
 	const { setShowAddToCart, setSelectedProduct, selectedProduct } =

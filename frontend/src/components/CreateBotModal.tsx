@@ -1,4 +1,3 @@
-import React from 'react'
 import {
 	Dialog,
 	DialogTitle,
@@ -20,10 +19,8 @@ const schema = yup.object({
 	username: yup
 		.string()
 		.required('Введите username')
-		.matches(
-			/^(.*)(bot|_bot)$/,
-			'Username должен оканчиваться на bot или _bot',
-		),
+		.matches(/^(.*)(bot|_bot)$/, 'Username должен оканчиваться на bot или _bot')
+		.matches(/^\S*$/, 'Пробелы не допускаются'),
 })
 
 type Props = {

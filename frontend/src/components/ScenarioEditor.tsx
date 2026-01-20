@@ -14,17 +14,14 @@ import type {
 	Node,
 	Edge,
 	Connection,
-	OnNodesChange,
-	OnEdgesChange,
+	
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import MessageNode from './MessageNode'
 import MessageNodeEditor from './MessageNodeEditor'
-import NodeHoverActions from './NodeHoverActions'
 
 // Кастомный узел для сценария
 const ScenarioNode = ({
-	id,
 	data,
 	selected,
 }: {
@@ -57,7 +54,8 @@ const ScenarioNode = ({
 					display: 'flex',
 					alignItems: 'center',
 					background: '#f0f8ff',
-					borderRadius: '8px 8px 0 0',
+					borderRadius:
+						data.title === 'Начало' || data.title === 'Конец' ? '8px' : '8px 8px 0 0',
 				}}
 			>
 				<span style={{ fontWeight: 'bold', color: '#333' }}>{data.title}</span>
@@ -158,7 +156,7 @@ const ScenarioEditor: React.FC<ScenarioEditorProps> = ({
 	edges,
 	setEdges,
 	onEdgesChange,
-	onAddNode,
+
 }) => {
 	const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null)
 	const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
@@ -221,28 +219,6 @@ const ScenarioEditor: React.FC<ScenarioEditorProps> = ({
 			setSelectedNodeId(null)
 		}
 	}, [selectedNodeId, setNodes])
-
-	const handleDuplicateNode = useCallback(
-		(nodeId: string) => {
-			const node = nodes.find(n => n.id === nodeId)
-			if (node) {
-				const newNode = {
-					...node,
-					id: `${node.id}-copy-${Date.now()}`,
-					position: { x: node.position.x + 50, y: node.position.y + 50 },
-				}
-				setNodes(nodes => [...nodes, newNode])
-			}
-		},
-		[nodes, setNodes]
-	)
-
-	const handleDeleteNodeSpecific = useCallback(
-		(nodeId: string) => {
-			setNodes(nodes => nodes.filter(n => n.id !== nodeId))
-		},
-		[setNodes]
-	)
 
 	const handleTitleChange = useCallback(
 		(newTitle: string) => {

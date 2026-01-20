@@ -6,7 +6,6 @@ import type {
 	Product,
 	CartItem,
 	Order,
-	OrderItem,
 	GetScenarioResponse,
 	ScenarioStep,
 } from '../../types/bot'
@@ -19,6 +18,7 @@ export const botsApi = apiSlice.injectEndpoints({
 				bots: {
 					id: number
 					name: string
+					username: string
 					description: string
 					created_at: string
 					status: string
@@ -28,6 +28,7 @@ export const botsApi = apiSlice.injectEndpoints({
 				response.bots.map(bot => ({
 					id: bot.id.toString(),
 					name: bot.name,
+					username: bot.username,
 					description: bot.description,
 					avatarUrl: null,
 					tokenMask: bot.token_mask,
@@ -48,6 +49,7 @@ export const botsApi = apiSlice.injectEndpoints({
 			transformResponse: (response: {
 				id: number
 				name: string
+				username: string
 				description: string
 				created_at: string
 				status: string
@@ -55,6 +57,7 @@ export const botsApi = apiSlice.injectEndpoints({
 			}) => ({
 				id: response.id.toString(),
 				name: response.name,
+				username: response.username,
 				description: response.description,
 				avatarUrl: null,
 				tokenMask: response.token_mask,
@@ -62,19 +65,21 @@ export const botsApi = apiSlice.injectEndpoints({
 				active: response.status === 'active',
 				link: `https://t.me/${response.name.toLowerCase().replace(/\s+/g, '_')}`,
 			}),
-			providesTags: (result, error, id) => [{ type: 'Bots', id }],
+			providesTags: id => [{ type: 'Bots', id }],
 		}),
 		createBot: build.mutation<Bot, CreateBotDto>({
 			query: body => ({ url: '/api/bot/create', method: 'POST', body }),
 			transformResponse: (response: {
 				id: number
 				name: string
+				username: string
 				description: string
 				created_at: string
 				status: string
 			}) => ({
 				id: response.id.toString(),
 				name: response.name,
+				username: response.username,
 				description: response.description,
 				avatarUrl: null,
 				tokenMask: null,
@@ -97,12 +102,14 @@ export const botsApi = apiSlice.injectEndpoints({
 			transformResponse: (response: {
 				id: number
 				name: string
+				username: string
 				description: string
 				created_at: string
 				status: string
 			}) => ({
 				id: response.id.toString(),
 				name: response.name,
+				username: response.username,
 				description: response.description,
 				avatarUrl: null,
 				tokenMask: null,
@@ -110,7 +117,7 @@ export const botsApi = apiSlice.injectEndpoints({
 				active: response.status === 'active',
 				link: `https://t.me/${response.name.toLowerCase().replace(/\s+/g, '_')}`,
 			}),
-			invalidatesTags: (result, error, { id }) => [
+			invalidatesTags: ({ id }) => [
 				{ type: 'Bots', id },
 				{ type: 'Bots', id: 'LIST' },
 			],
@@ -143,7 +150,7 @@ export const botsApi = apiSlice.injectEndpoints({
 					createdAt: product.created_at,
 					updatedAt: product.updated_at,
 				})),
-			providesTags: (result, error, botId) => [{ type: 'Products', id: botId }],
+			providesTags: botId => [{ type: 'Products', id: botId }],
 		}),
 		createProduct: build.mutation<
 			Product,
@@ -187,9 +194,7 @@ export const botsApi = apiSlice.injectEndpoints({
 				createdAt: response.created_at,
 				updatedAt: response.updated_at,
 			}),
-			invalidatesTags: (result, error, { botId }) => [
-				{ type: 'Products', id: botId },
-			],
+			invalidatesTags: ({ botId }) => [{ type: 'Products', id: botId }],
 		}),
 		updateProduct: build.mutation<
 			Product,
@@ -234,18 +239,14 @@ export const botsApi = apiSlice.injectEndpoints({
 				createdAt: response.created_at,
 				updatedAt: response.updated_at,
 			}),
-			invalidatesTags: (result, error, { botId }) => [
-				{ type: 'Products', id: botId },
-			],
+			invalidatesTags: ({ botId }) => [{ type: 'Products', id: botId }],
 		}),
 		deleteProduct: build.mutation<void, { botId: string; productId: string }>({
 			query: ({ botId, productId }) => ({
 				url: `/api/bot/${botId}/product/${productId}`,
 				method: 'DELETE',
 			}),
-			invalidatesTags: (result, error, { botId }) => [
-				{ type: 'Products', id: botId },
-			],
+			invalidatesTags: ({ botId }) => [{ type: 'Products', id: botId }],
 		}),
 		getPublicProducts: build.query<Product[], string>({
 			query: botId => ({
@@ -278,7 +279,7 @@ export const botsApi = apiSlice.injectEndpoints({
 					createdAt: product.created_at,
 					updatedAt: product.updated_at,
 				})),
-			providesTags: (result, error, botId) => [{ type: 'Products', id: botId }],
+			providesTags: botId => [{ type: 'Products', id: botId }],
 		}),
 		getCart: build.query<CartItem[], { botId: string; username: string }>({
 			query: ({ botId, username }) => ({
@@ -301,7 +302,7 @@ export const botsApi = apiSlice.injectEndpoints({
 					totalPrice: item.totalPrice,
 					userId: item.userId,
 				})),
-			providesTags: (result, error, { botId, username }) => [
+			providesTags: ({ botId, username }) => [
 				{ type: 'Cart', id: `${botId}-${username}` },
 			],
 		}),
@@ -314,7 +315,7 @@ export const botsApi = apiSlice.injectEndpoints({
 				method: 'POST',
 				body,
 			}),
-			invalidatesTags: (result, error, { botId, username }) => [
+			invalidatesTags: ({ botId, username }) => [
 				{ type: 'Cart', id: `${botId}-${username}` },
 			],
 		}),
@@ -375,7 +376,7 @@ export const botsApi = apiSlice.injectEndpoints({
 					})),
 					createdAt: order.created_at,
 				})),
-			providesTags: (result, error, { botId, username }) => [
+			providesTags: ({ botId, username }) => [
 				{ type: 'Orders', id: `${botId}-${username}` },
 			],
 		}),
@@ -385,7 +386,7 @@ export const botsApi = apiSlice.injectEndpoints({
 				method: 'POST',
 				body: { username },
 			}),
-			invalidatesTags: (result, error, { botId, username }) => [
+			invalidatesTags: ({ botId, username }) => [
 				{ type: 'Cart', id: `${botId}-${username}` },
 				{ type: 'Orders', id: `${botId}-${username}` },
 			],
@@ -399,6 +400,12 @@ export const botsApi = apiSlice.injectEndpoints({
 					status: string
 					total_amount: number
 					created_at: string
+					items: {
+						product_id: number
+						product_name: string
+						quantity: number
+						price_at_purchase: number
+					}[]
 				}[]
 			}) =>
 				response.orders.map(order => ({
@@ -407,10 +414,24 @@ export const botsApi = apiSlice.injectEndpoints({
 					username: order.username,
 					status: order.status,
 					totalAmount: order.total_amount,
-					items: [],
+					items: order.items.map(item => ({
+						productId: item.product_id.toString(),
+						product: {
+							id: item.id.toString(),
+							botId: item.botId,
+							name: item.name,
+							description: item.description,
+							pictureUrls: item.pictureUrls,
+							previewUrl: item.previewUrl,
+							price: item.price,
+							active: item.active,
+							createdAt: item.createdAt,
+							updatedAt: item.updatedAt,
+						},
+					})),
 					createdAt: order.created_at,
 				})),
-			providesTags: (result, error, botId) => [{ type: 'Orders', id: botId }],
+			providesTags: botId => [{ type: 'Orders', id: botId }],
 		}),
 		setScenario: build.mutation<void, { botId: number; steps: ScenarioStep[] }>(
 			{
@@ -453,18 +474,6 @@ export const botsApi = apiSlice.injectEndpoints({
 				createdAt: response.created_at,
 				updatedAt: response.updated_at,
 			}),
-		}),
-		setScenario: build.mutation<void, { botId: number; steps: ScenarioStep[] }>(
-			{
-				query: ({ botId, steps }) => ({
-					url: '/api/bot/scenario',
-					method: 'POST',
-					body: { bot_id: botId, steps },
-				}),
-			},
-		),
-		getScenario: build.query<GetScenarioResponse, number>({
-			query: botId => ({ url: `/api/bot/${botId}/scenario`, method: 'GET' }),
 		}),
 	}),
 	overrideExisting: false,

@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Grid, Box, Typography, Button, Card, CardContent } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import AddIcon from '@mui/icons-material/Add'
 import BotCard from './BotCard'
 import CreateBotModal from './CreateBotModal'
 import EditBotModal from './EditBotModal'
-import { useDeleteBotMutation, useUpdateBotMutation } from '../features/bots/botsApi'
+import {
+	useDeleteBotMutation,
+	useUpdateBotMutation,
+} from '../features/bots/botsApi'
 import type { Bot, UpdateBotDto } from '../types/bot'
 
 type Props = {
@@ -19,7 +22,9 @@ export default function BotsGrid({ bots }: Props) {
 	const [selectedBot, setSelectedBot] = useState<Bot | null>(null)
 	const [deleteError, setDeleteError] = useState<string | null>(null)
 	const [saveError, setSaveError] = useState<string | null>(null)
-	const [statusErrors, setStatusErrors] = useState<Record<string, string | null>>({})
+	const [statusErrors, setStatusErrors] = useState<
+		Record<string, string | null>
+	>({})
 	const [deleteBot, { isLoading: isDeleting }] = useDeleteBotMutation()
 	const [updateBot, { isLoading: isSaving }] = useUpdateBotMutation()
 
@@ -42,7 +47,7 @@ export default function BotsGrid({ bots }: Props) {
 	}
 
 	const handleEditScenario = (bot: Bot) => {
-		navigate(`/api/bot/edit/${bot.id}`)
+		navigate(`/app/bot/edit/${bot.id}`)
 	}
 
 	const handleCloseEditModal = () => {
@@ -59,7 +64,9 @@ export default function BotsGrid({ bots }: Props) {
 			await updateBot({ id: selectedBot.id, data }).unwrap()
 			handleCloseEditModal()
 		} catch (err: any) {
-			setSaveError(err?.data?.message || err?.message || 'Не удалось сохранить изменения')
+			setSaveError(
+				err?.data?.message || err?.message || 'Не удалось сохранить изменения',
+			)
 		}
 	}
 
@@ -70,7 +77,9 @@ export default function BotsGrid({ bots }: Props) {
 			await deleteBot(selectedBot.id).unwrap()
 			handleCloseEditModal()
 		} catch (err: any) {
-			setDeleteError(err?.data?.message || err?.message || 'Ошибка удаления бота')
+			setDeleteError(
+				err?.data?.message || err?.message || 'Ошибка удаления бота',
+			)
 		}
 	}
 
@@ -81,13 +90,18 @@ export default function BotsGrid({ bots }: Props) {
 				id: bot.id,
 				data: {
 					name: bot.name,
+					username: bot.username,
 					description: bot.description || '',
 					status: active ? 'active' : 'inactive',
 					token: '', // токен не меняем
-				}
+				},
 			}).unwrap()
 		} catch (err: any) {
-			setStatusErrors(prev => ({ ...prev, [bot.id]: err?.data?.message || err?.message || 'Ошибка изменения статуса' }))
+			setStatusErrors(prev => ({
+				...prev,
+				[bot.id]:
+					err?.data?.message || err?.message || 'Ошибка изменения статуса',
+			}))
 		}
 	}
 
@@ -103,14 +117,23 @@ export default function BotsGrid({ bots }: Props) {
 
 			{bots.length === 0 ? (
 				<Box sx={{ display: 'flex', justifyContent: 'center' }}>
-					<Card sx={{ width: '90%', borderRadius: 2, boxShadow: 3, p: 4, textAlign: 'center' }}>
+					<Card
+						sx={{
+							width: '90%',
+							borderRadius: 2,
+							boxShadow: 3,
+							p: 4,
+							textAlign: 'center',
+						}}
+					>
 						<CardContent>
 							<AddIcon sx={{ fontSize: 60, color: 'primary.main', mb: 2 }} />
 							<Typography variant='h5' sx={{ mb: 1 }}>
 								У вас пока нет ботов
 							</Typography>
 							<Typography variant='body2' color='text.secondary' sx={{ mb: 3 }}>
-								Боты еще не созданы. Для создания нового бота нажмите кнопку "Создать бота"
+								Боты еще не созданы. Для создания нового бота нажмите кнопку
+								"Создать бота"
 							</Typography>
 							<Button variant='contained' onClick={handleCreate}>
 								Создать бота

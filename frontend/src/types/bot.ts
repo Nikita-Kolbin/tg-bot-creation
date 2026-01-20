@@ -8,7 +8,6 @@ export type Bot = {
 	active: boolean
 	username: string
 	link?: string // ссылка для копирования
-	username?: string
 }
 
 export type CreateBotDto = {
@@ -23,6 +22,7 @@ export type UpdateBotDto = {
 	description: string
 	status: string
 	token: string
+	username: string
 }
 
 export type Product = {

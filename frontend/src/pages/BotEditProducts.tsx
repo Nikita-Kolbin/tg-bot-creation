@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Sidebar from '../components/ui/Sidebar'
 import {
@@ -32,12 +32,12 @@ import {
 	useGetBotOrdersQuery,
 } from '../features/bots/botsApi'
 import type { Product, Order } from '../types/bot'
+import AddMiniAppModal from '../components/AddMiniAppModal'
 
 export default function BotEditScenario() {
 	const { id } = useParams<{ id: string }>()
 	const navigate = useNavigate()
 	const { data: bot, isLoading, isError } = useGetBotByIdQuery(id!)
-	const botUrl = bot ? 'https://t.me/' : ''
 	const [updateBot, { isLoading: isUpdating }] = useUpdateBotMutation()
 	const [activeTab, setActiveTab] = useState(0)
 	const [search, setSearch] = useState('')
@@ -46,8 +46,19 @@ export default function BotEditScenario() {
 	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
 	const [orderDetailModalOpen, setOrderDetailModalOpen] = useState(false)
 	const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+	const botUrl = useMemo(
+		() => (bot?.username ? `https://t.me/${bot.username}` : ''),
+		[bot],
+	)
 	const { data: products = [] } = useGetProductsQuery(id!, { skip: !id })
 	const { data: orders = [] } = useGetBotOrdersQuery(id!, { skip: !id })
+
+	const filteredProducts = useMemo(() => {
+		if (search.length < 2) return products
+		return products.filter(product =>
+			product.name.toLowerCase().includes(search.toLowerCase()),
+		)
+	}, [products, search])
 
 	const analytics = useMemo(() => {
 		const now = new Date()
@@ -62,26 +73,10 @@ export default function BotEditScenario() {
 
 		const uniqueCustomers = new Set(orders.map(o => o.username)).size
 
-		const allTotal = orders.reduce(
-			(sum, o) => sum + (Number(o.totalAmount) || 0),
-			0,
-		)
-		const dayTotal = dayOrders.reduce(
-			(sum, o) => sum + (Number(o.totalAmount) || 0),
-			0,
-		)
-		const weekTotal = weekOrders.reduce(
-			(sum, o) => sum + (Number(o.totalAmount) || 0),
-			0,
-		)
-		const monthTotal = monthOrders.reduce(
-			(sum, o) => sum + (Number(o.totalAmount) || 0),
-			0,
-		)
-		const allTotal = orders.reduce((sum, o) => sum + o.total, 0)
-		const dayTotal = dayOrders.reduce((sum, o) => sum + o.total, 0)
-		const weekTotal = weekOrders.reduce((sum, o) => sum + o.total, 0)
-		const monthTotal = monthOrders.reduce((sum, o) => sum + o.total, 0)
+		const allTotal = orders.reduce((sum, o) => sum + o.totalAmount, 0)
+		const dayTotal = dayOrders.reduce((sum, o) => sum + o.totalAmount, 0)
+		const weekTotal = weekOrders.reduce((sum, o) => sum + o.totalAmount, 0)
+		const monthTotal = monthOrders.reduce((sum, o) => sum + o.totalAmount, 0)
 
 		return {
 			allOrders: allOrders.length,
@@ -99,7 +94,7 @@ export default function BotEditScenario() {
 	const tabs = ['Товары', 'История заказов', 'Аналитика']
 
 	const copyLink = async () => {
-		if (bot?.link) {
+		if (botUrl) {
 			try {
 				await navigator.clipboard.writeText(botUrl)
 				alert('Ссылка скопирована')
@@ -116,6 +111,7 @@ export default function BotEditScenario() {
 				id: bot.id,
 				data: {
 					name: bot.name,
+					username: bot.username,
 					description: bot.description || '',
 					status: active ? 'active' : 'inactive',
 					token: '',
@@ -125,6 +121,9 @@ export default function BotEditScenario() {
 			alert('Ошибка изменения статуса')
 		}
 	}
+
+	const [isAddMiniAppOpen, setIsAddMiniAppOpen] = useState(false)
+	const handleAddMiniApp = () => setIsAddMiniAppOpen(true)
 
 	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
 		setActiveTab(newValue)
@@ -213,7 +212,7 @@ export default function BotEditScenario() {
 								</TableRow>
 							</TableHead>
 							<TableBody>
-								{products.map(product => (
+								{filteredProducts.map(product => (
 									<TableRow
 										key={product.id}
 										onClick={() => handleEditProduct(product)}
@@ -282,17 +281,17 @@ export default function BotEditScenario() {
 								<TableCell
 									sx={{ color: 'primary.contrastText', fontWeight: 'bold' }}
 								>
-									Status
+									Статус
 								</TableCell>
 								<TableCell
 									sx={{ color: 'primary.contrastText', fontWeight: 'bold' }}
 								>
-									Total
+									Общая сумма
 								</TableCell>
 								<TableCell
 									sx={{ color: 'primary.contrastText', fontWeight: 'bold' }}
 								>
-									Created At
+									Заказ создан
 								</TableCell>
 							</TableRow>
 						</TableHead>
@@ -323,7 +322,7 @@ export default function BotEditScenario() {
 				)
 			case 2: // Аналитика
 				return (
-					<Grid container spacing={2}>
+					<Grid container spacing={3}>
 						<Grid item xs={12} sm={6} md={3}>
 							<Card sx={{ borderRadius: 2, boxShadow: 2 }}>
 								<CardContent>
@@ -435,6 +434,8 @@ export default function BotEditScenario() {
 					</Grid>
 				)
 			default:
+				console.log(activeTab)
+
 				return <Typography variant='h6'>Вкладка {tabs[activeTab]}</Typography>
 		}
 	}
@@ -506,12 +507,18 @@ export default function BotEditScenario() {
 									gap: 2,
 								}}
 							>
-								<Button
-									variant='contained'
-									onClick={() => navigate(`/api/bot/edit/${bot.id}/scenario`)}
-								>
-									Редактировать сценарий
-								</Button>
+								<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+									<Button variant='contained' onClick={handleAddMiniApp}>
+										Добавить Miniapp
+									</Button>
+
+									<Button
+										variant='contained'
+										onClick={() => navigate(`/app/bot/edit/${bot.id}/scenario`)}
+									>
+										Редактировать сценарий
+									</Button>
+								</Box>
 								<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
 									<a
 										href={botUrl}
@@ -570,10 +577,11 @@ export default function BotEditScenario() {
 				order={selectedOrder}
 				botId={bot.id}
 			/>
+			<AddMiniAppModal
+				open={isAddMiniAppOpen}
+				onClose={() => setIsAddMiniAppOpen(false)}
+				bot={bot}
+			/>
 		</Box>
 	)
 }
-
-
-
-

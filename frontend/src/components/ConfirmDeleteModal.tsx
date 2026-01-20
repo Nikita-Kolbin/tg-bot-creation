@@ -1,4 +1,3 @@
-import React from 'react'
 import {
 	Dialog,
 	DialogTitle,
@@ -25,7 +24,12 @@ export default function ConfirmDeleteModal({
 	error,
 }: Props) {
 	return (
-		<Dialog open={open} onClose={onClose} maxWidth={false} sx={{ width: 360, marginInline: "auto" }}>
+		<Dialog
+			open={open}
+			onClose={onClose}
+			maxWidth={false}
+			sx={{ width: 360, marginInline: 'auto' }}
+		>
 			<DialogTitle>Подтверждение удаления</DialogTitle>
 			<DialogContent>
 				<Typography>Вы уверены что хотите удалить блок?</Typography>

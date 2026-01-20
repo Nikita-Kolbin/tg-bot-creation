@@ -17,10 +17,20 @@ import ConfirmDeleteModal from './ConfirmDeleteModal'
 import type { Bot, UpdateBotDto } from '../types/bot'
 
 const schema = yup.object({
-	name: yup.string().required('Введите имя бота'),
+	name: yup
+		.string()
+		.required('Введите имя бота'),
 	description: yup.string().required('Введите описание'),
 	status: yup.string().required(),
-	token: yup.string().required('Введите токен'),
+	token: yup
+		.string()
+		.required('Введите токен')
+		.matches(/^\S*$/, 'Пробелы не допускаются'),
+	username: yup
+		.string()
+		.required('Введите username')
+		.matches(/^(.*)(bot|_bot)$/, 'Username должен оканчиваться на bot или _bot')
+		.matches(/^\S*$/, 'Пробелы не допускаются'),
 })
 
 type Props = {
@@ -49,7 +59,13 @@ export default function EditBotModal({
 	const [confirmOpen, setConfirmOpen] = useState(false)
 	const { control, handleSubmit, reset } = useForm<UpdateBotDto>({
 		resolver: yupResolver(schema),
-		defaultValues: { name: '', description: '', status: 'active', token: '' },
+		defaultValues: {
+			name: '',
+			description: '',
+			status: 'active',
+			token: '',
+			username: '',
+		},
 	})
 
 	React.useEffect(() => {
@@ -59,6 +75,7 @@ export default function EditBotModal({
 				description: bot.description || '',
 				status: bot.active ? 'active' : 'inactive',
 				token: bot.tokenMask || '',
+				username: bot.username || '',
 			})
 		}
 	}, [bot, reset])
@@ -149,6 +166,21 @@ export default function EditBotModal({
 								/>
 							)}
 						/>
+						<Controller
+							name='username'
+							control={control}
+							render={({ field, fieldState }) => (
+								<TextField
+									{...field}
+									label='Username бота'
+									fullWidth
+									margin='normal'
+									error={!!fieldState.error}
+									helperText={fieldState.error?.message}
+								/>
+							)}
+						/>
+
 						<Controller
 							name='status'
 							control={control}

@@ -29,7 +29,7 @@ const SignIn: React.FC = () => {
 			const res = await signIn(data).unwrap()
 			dispatch(
 				setCredentials({
-					user: res.user ?? { email: data.email },
+					user: res.user,
 					token: res.token,
 				})
 			)

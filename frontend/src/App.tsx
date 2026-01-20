@@ -25,7 +25,7 @@ const App: React.FC = () => {
 						}
 					/>
 					<Route
-						path='/api/bot/edit/:id'
+						path='/app/bot/edit/:id'
 						element={
 							<PrivateRoute>
 								<BotEditProducts />
@@ -33,7 +33,7 @@ const App: React.FC = () => {
 						}
 					/>
 					<Route
-						path='/api/bot/edit/:id/scenario'
+						path='/app/bot/edit/:id/scenario'
 						element={
 							<PrivateRoute>
 								<ScenarioPage />
