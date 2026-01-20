@@ -16,7 +16,7 @@ services:
     build: ./frontend
     env_file: ./frontend/.env
     ports:
-      - 80:80
+      - 5173:5173
     networks:
       - tg_bot_creator_nw
     depends_on:
