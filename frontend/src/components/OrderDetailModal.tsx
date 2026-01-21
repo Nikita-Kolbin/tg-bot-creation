@@ -18,11 +18,7 @@ type Props = {
 	order: Order | null
 }
 
-export default function OrderDetailModal({
-	open,
-	onClose,
-	order,
-}: Props) {
+export default function OrderDetailModal({ open, onClose, order }: Props) {
 	if (!order) return null
 
 	return (
@@ -59,14 +55,18 @@ export default function OrderDetailModal({
 					<TableHead>
 						<TableRow>
 							<TableCell>Название</TableCell>
+							<TableCell>Количество</TableCell>
 							<TableCell>Цена</TableCell>
+							<TableCell>Итоговая сумма</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
 						{order.items.map(item => (
 							<TableRow key={item.productId}>
 								<TableCell>{item.product.name}</TableCell>
+								<TableCell>{item.quantity}</TableCell>
 								<TableCell>{item.price} ₽</TableCell>
+								<TableCell>{item.quantity * item.price} ₽</TableCell>
 							</TableRow>
 						))}
 					</TableBody>

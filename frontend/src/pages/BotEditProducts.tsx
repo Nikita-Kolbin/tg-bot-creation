@@ -9,7 +9,6 @@ import {
 	CardContent,
 	Button,
 	Switch,
-	FormControlLabel,
 	IconButton,
 	Tabs,
 	Tab,
@@ -39,6 +38,10 @@ export default function BotEditScenario() {
 	const navigate = useNavigate()
 	const { data: bot, isLoading, isError } = useGetBotByIdQuery(id!)
 	const [updateBot, { isLoading: isUpdating }] = useUpdateBotMutation()
+	const [localActive, setLocalActive] = useState(bot?.active ?? false)
+	useEffect(() => {
+		setLocalActive(bot?.active ?? false)
+	}, [bot?.active])
 	const [activeTab, setActiveTab] = useState(0)
 	const [search, setSearch] = useState('')
 	const [productModalOpen, setProductModalOpen] = useState(false)
@@ -105,7 +108,7 @@ export default function BotEditScenario() {
 	}
 
 	const handleStatusChange = async (active: boolean) => {
-		if (!bot) return
+		setLocalActive(active)
 		try {
 			await updateBot({
 				id: bot.id,
@@ -119,7 +122,9 @@ export default function BotEditScenario() {
 			}).unwrap()
 		} catch {
 			alert('Ошибка изменения статуса')
+			setLocalActive(!active)
 		}
+		// setLocalActive(!active)
 	}
 
 	const [isAddMiniAppOpen, setIsAddMiniAppOpen] = useState(false)
@@ -202,11 +207,6 @@ export default function BotEditScenario() {
 									<TableCell
 										sx={{ color: 'primary.contrastText', fontWeight: 'bold' }}
 									>
-										Категория
-									</TableCell>
-									<TableCell
-										sx={{ color: 'primary.contrastText', fontWeight: 'bold' }}
-									>
 										Цена
 									</TableCell>
 								</TableRow>
@@ -253,7 +253,6 @@ export default function BotEditScenario() {
 										>
 											{product.description}
 										</TableCell>
-										<TableCell>-</TableCell>
 										<TableCell sx={{ fontWeight: 500, color: 'primary.main' }}>
 											{product.price} ₽
 										</TableCell>
@@ -471,31 +470,27 @@ export default function BotEditScenario() {
 								<Typography variant='h5' sx={{ mb: 2 }}>
 									{bot.name}
 								</Typography>
-								<Box sx={{ mt: 4 }}>
-									<FormControlLabel
-										control={
-											<Switch
-												checked={bot.active}
-												onChange={e => handleStatusChange(e.target.checked)}
-												disabled={isUpdating}
-												sx={{
-													'& .MuiSwitch-switchBase.Mui-checked': {
-														color: 'success.main',
-														'& + .MuiSwitch-track': {
-															backgroundColor: 'success.main',
-														},
-													},
-													'& .MuiSwitch-switchBase': {
-														color: 'error.main',
-														'& + .MuiSwitch-track': {
-															backgroundColor: 'error.main',
-														},
-													},
-												}}
-											/>
-										}
-										label='Статус:'
-										sx={{ mb: 2 }}
+								<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+									<Typography variant='body2' sx={{ fontWeight: 500 }}>
+										Статус:
+									</Typography>
+									<Switch
+										checked={localActive}
+										onChange={e => handleStatusChange(e.target.checked)}
+										sx={{
+											'& .MuiSwitch-switchBase.Mui-checked': {
+												color: 'success.main',
+												'& + .MuiSwitch-track': {
+													backgroundColor: 'success.main',
+												},
+											},
+											'& .MuiSwitch-switchBase': {
+												color: 'error.main',
+												'& + .MuiSwitch-track': {
+													backgroundColor: 'error.main',
+												},
+											},
+										}}
 									/>
 								</Box>
 							</Box>

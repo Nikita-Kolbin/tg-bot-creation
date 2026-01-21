@@ -162,7 +162,7 @@ export default function ProductDetailModal({ open, onClose, product }: Props) {
 					<Typography variant='h5' component='h2' sx={{ mb: 1 }}>
 						{product.name}
 					</Typography>
-					<Typography variant='h6' sx={{ color: 'primary.main', mb: 2 }}>
+					<Typography variant='h5' sx={{ color: 'primary.main', mb: 2 }}>
 						{product.price.toFixed(0)} ₽
 					</Typography>
 					<Typography variant='body1' sx={{ color: 'text.secondary' }}>

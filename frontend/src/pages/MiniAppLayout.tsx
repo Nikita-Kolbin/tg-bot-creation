@@ -1,10 +1,7 @@
 import React, { createContext, useContext, useState } from 'react'
 import { Outlet, useNavigate, useParams, useLocation } from 'react-router-dom'
 import BottomNavbar from '../components/BottomNavbar'
-import {
-	useAddToCartMutation,
-	useGetCartQuery,
-} from '../features/bots/botsApi'
+import { useAddToCartMutation, useGetCartQuery } from '../features/bots/botsApi'
 import { getTelegramUsername } from '../utils/telegramUtils'
 import type { Product, CartItem } from '../types/bot'
 
@@ -18,6 +15,7 @@ interface MiniAppContextType {
 	updateCartItem: (cartItem: CartItem, newQuantity: number) => void
 	setShowAddToCart: (value: boolean) => void
 	setSelectedProduct: (value: Product | null) => void
+	refetchCart: () => void
 	botId?: string
 }
 
@@ -39,7 +37,7 @@ const MiniAppLayout: React.FC = () => {
 	const [addToCartMutation] = useAddToCartMutation()
 
 	const username = getTelegramUsername()
-	const { data: cart = [] } = useGetCartQuery(
+	const { data: cart = [], refetch: refetchCart } = useGetCartQuery(
 		{ botId: botId!, username: username! },
 		{ skip: !botId || !username },
 	)
@@ -119,6 +117,7 @@ const MiniAppLayout: React.FC = () => {
 		updateCartItem,
 		setShowAddToCart,
 		setSelectedProduct,
+		refetchCart,
 		botId,
 	}
 

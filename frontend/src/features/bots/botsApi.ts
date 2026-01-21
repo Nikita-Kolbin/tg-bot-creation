@@ -117,7 +117,7 @@ export const botsApi = apiSlice.injectEndpoints({
 				active: response.status === 'active',
 				link: `https://t.me/${response.name.toLowerCase().replace(/\s+/g, '_')}`,
 			}),
-			invalidatesTags: ({ id }) => [
+			invalidatesTags: (result, error, { id }) => [
 				{ type: 'Bots', id },
 				{ type: 'Bots', id: 'LIST' },
 			],
@@ -194,7 +194,9 @@ export const botsApi = apiSlice.injectEndpoints({
 				createdAt: response.created_at,
 				updatedAt: response.updated_at,
 			}),
-			invalidatesTags: ({ botId }) => [{ type: 'Products', id: botId }],
+			invalidatesTags: (result, error, { botId }) => [
+				{ type: 'Products', id: botId },
+			],
 		}),
 		updateProduct: build.mutation<
 			Product,
@@ -239,14 +241,18 @@ export const botsApi = apiSlice.injectEndpoints({
 				createdAt: response.created_at,
 				updatedAt: response.updated_at,
 			}),
-			invalidatesTags: ({ botId }) => [{ type: 'Products', id: botId }],
+			invalidatesTags: (result, error, { botId }) => [
+				{ type: 'Products', id: botId },
+			],
 		}),
 		deleteProduct: build.mutation<void, { botId: string; productId: string }>({
 			query: ({ botId, productId }) => ({
 				url: `/api/bot/${botId}/product/${productId}`,
 				method: 'DELETE',
 			}),
-			invalidatesTags: ({ botId }) => [{ type: 'Products', id: botId }],
+			invalidatesTags: (result, error, { botId }) => [
+				{ type: 'Products', id: botId },
+			],
 		}),
 		getPublicProducts: build.query<Product[], string>({
 			query: botId => ({
@@ -279,7 +285,9 @@ export const botsApi = apiSlice.injectEndpoints({
 					createdAt: product.created_at,
 					updatedAt: product.updated_at,
 				})),
-			providesTags: botId => [{ type: 'Products', id: botId }],
+			providesTags: (result, error, { botId }) => [
+				{ type: 'Products', id: botId },
+			],
 		}),
 		getCart: build.query<CartItem[], { botId: string; username: string }>({
 			query: ({ botId, username }) => ({
@@ -302,7 +310,7 @@ export const botsApi = apiSlice.injectEndpoints({
 					totalPrice: item.totalPrice,
 					userId: item.userId,
 				})),
-			providesTags: ({ botId, username }) => [
+			providesTags: (result, error, { botId, username }) => [
 				{ type: 'Cart', id: `${botId}-${username}` },
 			],
 		}),
@@ -315,70 +323,101 @@ export const botsApi = apiSlice.injectEndpoints({
 				method: 'POST',
 				body,
 			}),
-			invalidatesTags: ({ botId, username }) => [
+			invalidatesTags: (result, error, { botId, username }) => [
 				{ type: 'Cart', id: `${botId}-${username}` },
 			],
 		}),
 		getUserOrders: build.query<Order[], { botId: string; username: string }>({
 			query: ({ botId, username }) => ({
-				url: `/api/bot/${botId}/orders/user?username=${username}`,
+				url: `/api/bot/${botId}/orders/user`,
 				method: 'GET',
+				params: { username },
 			}),
-			transformResponse: (response: {
-				orders: {
-					id: number
-					bot_id: number
-					username: string
-					status: string
-					total_amount: number
-					items: {
-						product_id: number
-						product: {
-							id: number
-							bot_id: number
-							name: string
-							description: string
-							picture_urls: string[]
-							preview_url: string
-							price: number
-							active: boolean
-							created_at: string
-							updated_at: string
+			transformResponse: (response: any, meta, arg) => {
+				console.log('=== TRANSFORM RESPONSE DEBUG ===')
+				console.log('Raw response:', response)
+
+				// Проверка структуры ответа
+				if (!response || typeof response !== 'object') {
+					console.warn('Response is not an object:', response)
+					return []
+				}
+
+				// Проверьте разные возможные структуры ответа
+				const ordersArray = response.orders || response.data || response
+
+				if (!Array.isArray(ordersArray)) {
+					console.warn('Orders is not an array:', ordersArray)
+					return []
+				}
+
+				return ordersArray
+					.map((order: any, index: number) => {
+						console.log(`Processing order ${index}:`, order)
+
+						// Безопасные преобразования
+						try {
+							return {
+								id: (order.id ?? order.order_id ?? '').toString(),
+								botId: arg.botId,
+								username: order.username || '',
+								status: order.status || 'unknown',
+								totalAmount: order.total_amount ?? order.totalAmount ?? 0,
+								items: (Array.isArray(order.items) ? order.items : []).map(
+									(item: any) => ({
+										productId: (
+											item.product_id ??
+											item.productId ??
+											''
+										).toString(),
+										product: {
+											id: (item.product?.id ?? '').toString(),
+											botId: (
+												item.product?.bot_id ??
+												item.product?.botId ??
+												''
+											).toString(),
+											name: item.product?.name || '',
+											description: item.product?.description || '',
+											pictureUrls:
+												item.product?.picture_urls ||
+												item.product?.pictureUrls ||
+												[],
+											previewUrl:
+												item.product?.preview_url ||
+												item.product?.previewUrl ||
+												'',
+											price: item.product?.price || 0,
+											active: item.product?.active ?? false,
+											createdAt:
+												item.product?.created_at ||
+												item.product?.createdAt ||
+												'',
+											updatedAt:
+												item.product?.updated_at ||
+												item.product?.updatedAt ||
+												'',
+										},
+										quantity: item.quantity || 0,
+										price: item.price || 0,
+									}),
+								),
+								createdAt: order.created_at || order.createdAt || '',
+							}
+						} catch (error) {
+							console.error(`Error transforming order ${index}:`, error, order)
+							return null
 						}
-						quantity: number
-						price: number
-					}[]
-					created_at: string
-				}[]
-			}) =>
-				response.orders.map(order => ({
-					id: order.id.toString(),
-					botId: order.bot_id.toString(),
-					username: order.username,
-					status: order.status,
-					totalAmount: order.total_amount,
-					items: order.items.map(item => ({
-						productId: item.product_id.toString(),
-						product: {
-							id: item.product.id.toString(),
-							botId: item.product.bot_id.toString(),
-							name: item.product.name,
-							description: item.product.description,
-							pictureUrls: item.product.picture_urls,
-							previewUrl: item.product.preview_url,
-							price: item.product.price,
-							active: item.product.active,
-							createdAt: item.product.created_at,
-							updatedAt: item.product.updated_at,
-						},
-						quantity: item.quantity,
-						price: item.price,
-					})),
-					createdAt: order.created_at,
-				})),
-			providesTags: ({ botId, username }) => [
-				{ type: 'Orders', id: `${botId}-${username}` },
-			],
+					})
+					.filter(Boolean)
+			},
+			providesTags: result =>
+				result
+					? [
+							...result.map(({ id }) => ({ type: 'Orders' as const, id })),
+							{ type: 'Orders', id: 'LIST' },
+						]
+					: [{ type: 'Orders', id: 'LIST' }],
 		}),
 		createOrder: build.mutation<void, { botId: string; username: string }>({
 			query: ({ botId, username }) => ({
@@ -386,13 +425,16 @@ export const botsApi = apiSlice.injectEndpoints({
 				method: 'POST',
 				body: { username },
 			}),
-			invalidatesTags: ({ botId, username }) => [
+			invalidatesTags: (result, error, { botId, username }) => [
 				{ type: 'Cart', id: `${botId}-${username}` },
 				{ type: 'Orders', id: `${botId}-${username}` },
 			],
 		}),
 		getBotOrders: build.query<Order[], string>({
-			query: botId => ({ url: `/api/bot/${botId}/orders`, method: 'GET' }),
+			query: botId => ({
+				url: `/api/bot/${botId}/orders`,
+				method: 'GET',
+			}),
 			transformResponse: (response: {
 				orders: {
 					id: number
@@ -407,31 +449,56 @@ export const botsApi = apiSlice.injectEndpoints({
 						price_at_purchase: number
 					}[]
 				}[]
-			}) =>
-				response.orders.map(order => ({
-					id: order.id.toString(),
-					botId: '', // assuming not provided, set to empty
-					username: order.username,
-					status: order.status,
-					totalAmount: order.total_amount,
-					items: order.items.map(item => ({
-						productId: item.product_id.toString(),
-						product: {
-							id: item.id.toString(),
-							botId: item.botId,
-							name: item.name,
-							description: item.description,
-							pictureUrls: item.pictureUrls,
-							previewUrl: item.previewUrl,
-							price: item.price,
-							active: item.active,
-							createdAt: item.createdAt,
-							updatedAt: item.updatedAt,
-						},
-					})),
-					createdAt: order.created_at,
-				})),
-			providesTags: botId => [{ type: 'Orders', id: botId }],
+			}) => {
+				// Проверка на undefined/null
+				if (!response || !response.orders) {
+					console.warn('Invalid response structure:', response)
+					return []
+				}
+
+				return response.orders.map(order => {
+					// Безопасное преобразование с проверками
+					return {
+						id: order.id?.toString() || '',
+						botId: '', // Сервер не возвращает botId в заказе
+						username: order.username || '',
+						status: order.status || '',
+						totalAmount: order.total_amount || 0,
+						items: (order.items || []).map(item => ({
+							productId: item.product_id?.toString() || '',
+							product: {
+								id: item.product_id?.toString() || '', // Используем product_id как id продукта
+								botId: '', // Не предоставляется сервером
+								name: item.product_name || '',
+								description: '', // Не предоставляется сервером
+								pictureUrls: [], // Не предоставляется сервером
+								previewUrl: '', // Не предоставляется сервером
+								price: item.price_at_purchase || 0,
+								active: true, // По умолчанию
+								createdAt: '', // Не предоставляется сервером
+								updatedAt: '', // Не предоставляется сервером
+							},
+							quantity: item.quantity || 0,
+							price: item.price_at_purchase || 0,
+						})),
+						createdAt: order.created_at || '',
+					}
+				})
+			},
+			providesTags: (result, error, botId) => {
+				const tags = [{ type: 'Orders' as const, id: botId }]
+
+				if (result) {
+					tags.push(
+						...result.map(order => ({
+							type: 'Orders' as const,
+							id: `${botId}-${order.id}`,
+						})),
+					)
+				}
+
+				return tags
+			},
 		}),
 		setScenario: build.mutation<void, { botId: number; steps: ScenarioStep[] }>(
 			{

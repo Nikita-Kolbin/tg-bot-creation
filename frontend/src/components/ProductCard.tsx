@@ -10,19 +10,26 @@ type Props = {
 export default function ProductCard({ product, onClick }: Props) {
 	const [currentImageIndex, setCurrentImageIndex] = useState(0)
 	const [startX, setStartX] = useState<number | null>(null)
-	const [imageSrc, setImageSrc] = useState(
-		product.pictureUrls[currentImageIndex] || ''
-	)
+	const [imageSrc, setImageSrc] = useState('')
+
 	const [imageOpacity, setImageOpacity] = useState(1)
+
+	const imagesUrl = [product.previewUrl, ...product.pictureUrls].filter(Boolean)
 
 	useEffect(() => {
 		setImageOpacity(0)
 		const timeout = setTimeout(() => {
-			setImageSrc(product.pictureUrls[currentImageIndex] || '')
+			setImageSrc(imagesUrl[currentImageIndex] || '')
+
 			setImageOpacity(1)
 		}, 300)
 		return () => clearTimeout(timeout)
-	}, [currentImageIndex, product.pictureUrls])
+	}, [currentImageIndex, imagesUrl])
+
+	useEffect(() => {
+		setCurrentImageIndex(0)
+		setImageSrc(imagesUrl[0] || '')
+	}, [imagesUrl])
 
 	const handleTouchStart = (e: React.TouchEvent) => {
 		setStartX(e.touches[0].clientX)
@@ -37,28 +44,22 @@ export default function ProductCard({ product, onClick }: Props) {
 		if (deltaX > threshold) {
 			// Swipe right: previous image
 			setCurrentImageIndex(
-				prev =>
-					(prev - 1 + product.pictureUrls.length) % product.pictureUrls.length
+				prev => (prev - 1 + imagesUrl.length) % imagesUrl.length,
 			)
 		} else if (deltaX < -threshold) {
 			// Swipe left: next image
-			setCurrentImageIndex(prev => (prev + 1) % product.pictureUrls.length)
+			setCurrentImageIndex(prev => (prev + 1) % imagesUrl.length)
 		}
 		setStartX(null)
 	}
 
-	const imageUrl =
-		product.previewUrl ||
-		(product.pictureUrls.length > 0 ? product.pictureUrls[0] : undefined)
-
-	const hasMultipleImages = product.pictureUrls.length > 1
+	const hasMultipleImages = imagesUrl.length > 1
 
 	return (
 		<Card
 			variant='outlined'
 			onClick={() => onClick?.(product)}
 			sx={{
-				width: '100%',
 				maxWidth: 200,
 				aspectRatio: 0.75,
 				borderRadius: 3,
@@ -67,12 +68,14 @@ export default function ProductCard({ product, onClick }: Props) {
 				background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
 				display: 'flex',
 				flexDirection: 'column',
+				p: 1,
 				'&:hover': {
 					boxShadow: 6,
 					transform: 'translateY(-4px)',
 				},
 				'@media (max-width: 600px)': {
 					maxWidth: '100%',
+					aspectRatio: 1,
 					borderRadius: 2,
 					boxShadow: 1,
 				},
@@ -81,7 +84,11 @@ export default function ProductCard({ product, onClick }: Props) {
 			{hasMultipleImages ? (
 				<>
 					<Box
-						sx={{ position: 'relative', height: '75%' }}
+						sx={{
+							position: 'relative',
+							height: '70%',
+							'@media (max-width: 370px)': { height: '60%' },
+						}}
 						onTouchStart={handleTouchStart}
 						onTouchEnd={handleTouchEnd}
 					>
@@ -92,7 +99,7 @@ export default function ProductCard({ product, onClick }: Props) {
 							sx={{
 								height: '100%',
 								width: '100%',
-								objectFit: 'cover',
+								objectFit: 'contain',
 								opacity: imageOpacity,
 								transition: 'opacity 0.3s ease-in-out',
 							}}
@@ -105,7 +112,7 @@ export default function ProductCard({ product, onClick }: Props) {
 							gap: 0.5,
 						}}
 					>
-						{product.pictureUrls.map((_, index) => (
+						{imagesUrl.map((_, index) => (
 							<Box
 								key={index}
 								onClick={() => setCurrentImageIndex(index)}
@@ -125,23 +132,35 @@ export default function ProductCard({ product, onClick }: Props) {
 					</Box>
 				</>
 			) : (
-				imageUrl && (
-					<CardMedia
-						component='img'
-						image={imageUrl}
-						alt={product.name}
-						sx={{ height: '75%', objectFit: 'cover' }}
-					/>
-				)
+				<CardMedia
+					component='img'
+					image={imagesUrl[0]}
+					alt={product.name}
+					sx={{
+						height: '70%',
+						minHeight: '70%',
+						maxHeight: '70%',
+						objectFit: 'contain',
+						'@media (max-width: 370px)': {
+							height: '60%',
+							minHeight: '60%',
+							maxHeight: '60%',
+						},
+					}}
+				/>
 			)}
-			<Box sx={{ mt: 0.5, height: 8 }} />
+
 			<CardContent
 				sx={{
 					flex: 1,
 					display: 'flex',
 					flexDirection: 'column',
 					justifyContent: 'flex-end',
-					p: 2,
+					p: 0,
+
+					'&:last-child': {
+						p: 0,
+					},
 				}}
 			>
 				<Typography
@@ -151,7 +170,6 @@ export default function ProductCard({ product, onClick }: Props) {
 						color: 'primary.main',
 						fontWeight: 'bold',
 						textAlign: 'left',
-						mt: 0.25,
 					}}
 				>
 					{product.price.toFixed(0)} ₽
@@ -161,10 +179,13 @@ export default function ProductCard({ product, onClick }: Props) {
 					component='div'
 					sx={{
 						mt: 0.5,
-						overflow: 'hidden',
-						textOverflow: 'ellipsis',
-						whiteSpace: 'nowrap',
+
 						textAlign: 'left',
+						'@media (max-width: 320px)': {
+							fontSize: '0.75rem',
+							lineHeight: 1.2,
+							wordBreak: 'break-word',
+						},
 					}}
 				>
 					{product.name}

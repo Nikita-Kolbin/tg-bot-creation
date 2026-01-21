@@ -26,7 +26,5 @@ export function initTelegramWebApp(): void {
  * @returns username или null, если не доступно
  */
 export function getTelegramUsername(): string | null {
-	console.log('username:', window.Telegram.WebApp.initDataUnsafe.user?.username)
-	console.log(window.Telegram.WebApp)
 	return window.Telegram.WebApp.initDataUnsafe.user?.username || null
 }

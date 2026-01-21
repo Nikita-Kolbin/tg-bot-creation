@@ -1,11 +1,15 @@
-
+import { useEffect } from 'react'
 import { Box, Typography, Button } from '@mui/material'
 import { useMiniAppContext } from './MiniAppLayout'
 import { useGetPublicProductsQuery } from '../features/bots/botsApi'
 import type { Product } from '../types/bot'
 
 export default function Cart() {
-	const { cart, botId, updateCartItem } = useMiniAppContext()
+	const { cart, botId, updateCartItem, refetchCart } = useMiniAppContext()
+
+	useEffect(() => {
+		refetchCart()
+	}, [])
 
 	const { data: products } = useGetPublicProductsQuery(botId!, { skip: !botId })
 
