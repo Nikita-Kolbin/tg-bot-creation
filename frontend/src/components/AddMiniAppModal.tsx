@@ -17,7 +17,7 @@ type Props = {
 }
 
 export default function AddMiniAppModal({ open, onClose, bot }: Props) {
-	const miniAppUrl = `/miniApp/${bot.id}`
+	const miniAppUrl = `https://foreign-key.ru/miniApp/${bot.id}`
 
 	return (
 		<Dialog open={open} onClose={onClose} maxWidth='sm' fullWidth>
