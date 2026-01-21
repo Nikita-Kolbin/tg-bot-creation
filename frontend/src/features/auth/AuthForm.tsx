@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 type Props = {
 	mode: 'signin' | 'signup'
-	onSubmit: (data: { email: string; password: string }) => void
+	onSubmit: (data: { username: string; password: string }) => void
 	loading?: boolean
 	error?: string | null
 }
@@ -21,7 +21,7 @@ export const AuthForm: React.FC<Props> = ({
 		<form
 			onSubmit={e => {
 				e.preventDefault()
-				onSubmit({ email, password })
+				onSubmit({ username: email, password })
 			}}
 			style={{ maxWidth: 420, margin: '0 auto' }}
 		>

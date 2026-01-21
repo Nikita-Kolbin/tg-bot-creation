@@ -10,7 +10,7 @@ import { signUpSchema } from '../features/auth/validation'
 import { TextField, Button, Box, Alert, Grid, Typography } from '@mui/material'
 import AuthLayout from '../components/ui/AuthLayout'
 
-type FormValues = { email: string; password: string }
+type FormValues = { username: string; password: string }
 
 const SignUp: React.FC = () => {
 	const [signUp, { isLoading }] = useSignUpMutation()
@@ -20,7 +20,7 @@ const SignUp: React.FC = () => {
 
 	const { control, handleSubmit } = useForm<FormValues>({
 		resolver: yupResolver(signUpSchema),
-		defaultValues: { email: '', password: '' },
+		defaultValues: { username: '', password: '' },
 	})
 
 	const onSubmit = async (data: FormValues) => {
@@ -31,9 +31,9 @@ const SignUp: React.FC = () => {
 			if ((res as any).token) {
 				dispatch(
 					setCredentials({
-						user: (res as any).user ?? { email: data.email },
+						user: (res as any).user ?? { username: data.email },
 						token: (res as any).token,
-					})
+					}),
 				)
 				navigate('/')
 			} else {
@@ -52,7 +52,7 @@ const SignUp: React.FC = () => {
 				<Grid container spacing={2}>
 					<Grid item xs={12}>
 						<Controller
-							name='email'
+							name='username'
 							control={control}
 							render={({ field, fieldState }) => (
 								<TextField
