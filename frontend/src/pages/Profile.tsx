@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
 	Box,
 	Typography,
@@ -52,12 +52,40 @@ function OrderItem({ item, botId }: { item: any; botId: string }) {
 export default function Profile() {
 	const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
 	const [openModal, setOpenModal] = useState(false)
+
 	const username = getTelegramUsername()
 	const { botId } = useMiniAppContext()
-	const { data: orders = [], isLoading } = useGetUserOrdersQuery(
+
+	const {
+		data: orders = [],
+		isLoading,
+		error,
+		refetch,
+	} = useGetUserOrdersQuery(
 		{ botId: botId!, username: username! },
-		{ skip: !botId || !username },
+		{
+			skip: !botId || !username,
+			// Временно отключите skip для тестирования
+			// skip: false
+		},
 	)
+
+	// Добавьте отладку
+	console.log('=== DEBUG USER ORDERS ===')
+	console.log('botId:', botId)
+	console.log('username:', username)
+	console.log('isLoading:', isLoading)
+	console.log('error:', error)
+	console.log('orders data:', orders)
+	console.log('orders length:', orders?.length || 0)
+	console.log('=== END DEBUG ===')
+
+	useEffect(() => {
+		if (botId && username) {
+			console.log('Refetching orders with:', { botId, username })
+			refetch()
+		}
+	}, [botId, username, refetch])
 
 	if (isLoading) {
 		return <Typography>Загрузка...</Typography>
@@ -133,8 +161,7 @@ export default function Profile() {
 					</DialogTitle>
 					<DialogContent>
 						<Typography variant='body1' sx={{ mb: 1 }}>
-							Дата и время:{' '}
-							{new Date(selectedOrder.createdAt).toLocaleString()}
+							Дата и время: {new Date(selectedOrder.createdAt).toLocaleString()}
 						</Typography>
 						<Typography variant='body1' sx={{ mb: 1 }}>
 							Статус:{' '}
