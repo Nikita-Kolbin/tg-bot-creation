@@ -44,9 +44,11 @@ export default function Sidebar() {
 			}}
 		>
 			<Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-				<Avatar>{user?.email?.[0]?.toUpperCase() ?? 'U'}</Avatar>
+				<Avatar>{user?.username?.[0]?.toUpperCase() ?? 'U'}</Avatar>
 				<Box>
-					<Typography variant='subtitle1'>{user?.email ?? 'User'}</Typography>
+					<Typography variant='subtitle1'>
+						{user?.username ?? 'User'}
+					</Typography>
 				</Box>
 			</Box>
 

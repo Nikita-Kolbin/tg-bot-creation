@@ -1,6 +1,6 @@
 export type User = {
 	id: string
-	email: string
+	username: string
 	role?: string
 }
 
@@ -10,11 +10,11 @@ export type AuthResponse = {
 }
 
 export type SignInDto = {
-	email: string
+	username: string
 	password: string
 }
 
 export type SignUpDto = {
-	email: string
+	username: string
 	password: string
 }
